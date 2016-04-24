@@ -2,7 +2,6 @@ package Tree;
 
 import javafx.util.Pair;
 
-import java.lang.reflect.Array;
 import java.util.Vector;
 
 public class BTree<Key extends Comparable<? super Key>, Value>{
@@ -68,6 +67,8 @@ public class BTree<Key extends Comparable<? super Key>, Value>{
                 if(getSize() > MAX_SIZE)
                     splitCurrentNode();
             }
+            if( child.size() != keyValPair.size()+1)
+                System.out.println("buuuuug");
         }
 
         private int binarySearchForLocationToAdd(Key key) {
@@ -97,14 +98,16 @@ public class BTree<Key extends Comparable<? super Key>, Value>{
             Node newNode = new Node(this.HALF_MAX_SIZE, this.parent);
             int victim = HALF_MAX_SIZE;
             int offset = victim+1;
-            moveDataToSiblingAndParent(newNode, offset, victim);
+            moveDataToSiblingAndParent(newNode, offset);
+            parent.insert(keyValPair.remove(victim), newNode, this);
             return null;
         }
 
-        protected void moveDataToSiblingAndParent(Node newNode, int offset, int victimOffset) {
-            Pair<Key, Value> victimPair = keyValPair.elementAt(victimOffset);
-            for(int i = offset; i < MAX_SIZE+1; i++)
+        protected void moveDataToSiblingAndParent(Node newNode, int offset) {
+            for(int i = offset; i <= MAX_SIZE; i++)
             {
+                if(keyValPair.size()-1<offset || child.size()-1<offset)
+                    System.out.println("ohhhh nooo");
                 if(i == offset) // first node
                 {
                     Node smallerChild = child.remove(offset)
@@ -122,7 +125,6 @@ public class BTree<Key extends Comparable<? super Key>, Value>{
                 newNode.parent = root;
                 depth++;
             }
-            parent.insert(victimPair, newNode, this);
         }
     }
 

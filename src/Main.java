@@ -10,11 +10,11 @@ public class Main {
 
     public static void main(String args[])
     {
-        BTree<Integer, Integer> tree = new BTree<Integer, Integer>(3);
-        for( int i = 0; i < 4000; i++) {
-            if( i == 10 )
+        BPTree<String, Integer> tree = new BPTree<String, Integer>(2);
+        for( int i = 0; i < 9000000; i++) {
+            if( i == 3 )
                 System.out.println("");
-            tree.insert(i, i);
+            tree.insert(String.valueOf(i), i);
         }
 
 //        Trie tree = new Trie();
@@ -26,7 +26,7 @@ public class Main {
 //        }
 //
 //        Hashtable<String, Integer> hash = new Hashtable<String, Integer>();
-        System.out.println(tree.toString()+"");
+//        System.out.println(tree.toString()+"");
 
     }
 }

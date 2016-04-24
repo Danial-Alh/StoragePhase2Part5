@@ -21,7 +21,10 @@ public class BPTree <Key extends Comparable<? super Key>, Value> extends BTree<K
             LeafNode newNode = new LeafNode(this.HALF_MAX_SIZE, this.parent);
             int victim = HALF_MAX_SIZE;
             int offset = victim;
-            moveDataToSiblingAndParent(newNode, offset, victim);
+            Pair<Key, Value> victimPair = keyValPair.elementAt(victim);
+            moveDataToSiblingAndParent(newNode, offset);
+            child.add(null);
+            parent.insert(victimPair, newNode, this);
             LeafNode tempNode = rightSibling;
             rightSibling = newNode;
             newNode.leftSibling = this;
