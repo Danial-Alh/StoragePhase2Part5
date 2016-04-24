@@ -1,6 +1,8 @@
 package Tree;
 
 import javafx.util.Pair;
+
+import java.lang.reflect.Array;
 import java.util.Vector;
 
 public class BTree<Key extends Comparable<? super Key>, Value>{
@@ -46,36 +48,48 @@ public class BTree<Key extends Comparable<? super Key>, Value>{
             }
             else
             {
-                boolean isAdded = false;
-                for( int i = 0; i < getSize(); i++)
-                {
-                    if(keyValPair.elementAt(i).getKey().compareTo(newNode.getKey()) > 0)
-                    {
-                        keyValPair.insertElementAt(newNode, i);
-                        child.insertElementAt(biggerChild, i+1);
-                        if( biggerChild != null) biggerChild.parent = this;
-                        if(smallerChild != null)
-                        {
-                            child.set(i, smallerChild);
-                            smallerChild.parent = this;
-                        }
-                        isAdded = true;
-                        break;
-                    }
-                }
-                if(!isAdded)
+                int location = binarySearchForLocationToAdd(newNode.getKey());
+                if(location >= keyValPair.size())
                 {
                     keyValPair.add(newNode);
                     child.add(biggerChild);
-                    if( biggerChild != null) biggerChild.parent = this;
-                    if(smallerChild != null)
-                    {
-                        child.set(keyValPair.size() - 1, smallerChild);
-                        smallerChild.parent = this;
-                    }
+                }
+                else
+                {
+                    keyValPair.insertElementAt(newNode, location);
+                    child.insertElementAt(biggerChild, location + 1);
+                }
+                if( biggerChild != null) biggerChild.parent = this;
+                if(smallerChild != null)
+                {
+                    child.set(location, smallerChild);
+                    smallerChild.parent = this;
                 }
                 if(getSize() > MAX_SIZE)
                     splitCurrentNode();
+            }
+        }
+
+        private int binarySearchForLocationToAdd(Key key) {
+            return binarySearchForLocationToAdd(key, 0, keyValPair.size()-1);
+        }
+
+        private int binarySearchForLocationToAdd(Key key, int from, int to) {
+            if(from > to)
+                return -1;
+            int mid = (from+to)/2;
+            int compareResult = key.compareTo(keyValPair.elementAt(mid).getKey());
+            if(compareResult < 0)
+            {
+                int returnValue = binarySearchForLocationToAdd(key, from, mid-1);
+                return (returnValue == -1 ? from : returnValue);
+            }
+            else if(compareResult == 0)
+                return mid;
+            else
+            {
+                int returnValue = binarySearchForLocationToAdd(key, mid+1, to);
+                return (returnValue == -1 ? to+1 : returnValue);
             }
         }
 
