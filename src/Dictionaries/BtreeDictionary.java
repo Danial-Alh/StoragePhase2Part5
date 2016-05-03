@@ -7,6 +7,11 @@ import Tree.BTree;
  */
 public class BtreeDictionary
 {
+    public BTree<String, WordProperties> getbTree()
+    {
+        return bTree;
+    }
+
     private BTree<String, WordProperties> bTree;
 
     public BtreeDictionary(int halfNodeSize)
@@ -25,7 +30,7 @@ public class BtreeDictionary
         else
         {
             wordProperties.occurrences++;
-            bTree.update(word, wordProperties);
+//            bTree.update(word, wordProperties);
         }
     }
 

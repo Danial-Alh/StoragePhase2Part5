@@ -19,8 +19,17 @@ public class Main
 
         for(int i = 0; i < 10; i++)
             btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 9; i++)
+            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 8; i++)
+            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 7; i++)
+            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 
         System.out.println(btreeDictionary);
+
+        for(int i = 0; i < 10; i++)
+            System.out.println(String.valueOf(i) + " --> " + btreeDictionary.getbTree().search(String.valueOf(i)));
 //        Trie tree = new Trie();
 //        for( int i = 0; i < 4000; i++) {
 //            if( i == 10 ) {
