@@ -11,16 +11,23 @@ public class BPTree<Key extends Comparable<? super Key>, Value> extends BTree<Ke
         root = new LeafNode(halfMaxSize, null);
     }
 
+
     @Override
-    protected Value search(Key key, Node startingNode)
+    protected Value returnValue(Key key, Node startingNode, int i1)
     {
-        return null;
+        if(startingNode.child.elementAt(i1) == null) // if it is leaf node
+            return super.returnValue(key, startingNode, i1); // it won't dig any more
+        else
+            return search(key, startingNode.child.elementAt(i1+1));
     }
 
     @Override
-    protected void update(Key key, Value value, Node startingNode)
+    protected void updateValue(Key key, Value value, Node startingNode, int i1)
     {
-
+        if(startingNode.child.elementAt(i1) == null) //it is leaf node
+            super.updateValue(key, value, startingNode, i1);// it will add it directly to starting node
+        else
+            update(key, value, startingNode.child.elementAt(i1+1));
     }
 
     protected class LeafNode extends Node

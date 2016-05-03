@@ -64,10 +64,15 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         else if(i1 == -1)
             System.out.println("ohhhh my goood");
         else if(startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
-            return startingNode.keyValPair.elementAt(i1).getValue();
+            return returnValue(key, startingNode, i1);
         else
             nextChild = startingNode.child.elementAt(i1);
         return search(key, nextChild);
+    }
+
+    protected Value returnValue(Key key, Node startingNode, int i1)
+    {
+        return startingNode.keyValPair.elementAt(i1).getValue();
     }
 
     public void update(Key key, Value value)
@@ -83,8 +88,7 @@ public class BTree<Key extends Comparable<? super Key>, Value>
             nextChild = startingNode.child.elementAt(i1);
         else if(startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
         {
-            Pair<Key, Value> oldKeyValuePair = startingNode.keyValPair.elementAt(i1);
-            startingNode.keyValPair.set(i1, new Pair<>(oldKeyValuePair.getKey(), value));
+            updateValue(key, value, startingNode, i1);
             return;
         }
         else
@@ -92,6 +96,11 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         update(key, value, nextChild);
     }
 
+    protected void updateValue(Key key, Value value, Node startingNode, int i1)
+    {
+        Pair<Key, Value> oldKeyValuePair = startingNode.keyValPair.elementAt(i1);
+        startingNode.keyValPair.set(i1, new Pair<>(oldKeyValuePair.getKey(), value));
+    }
 
 
     public String toString()
