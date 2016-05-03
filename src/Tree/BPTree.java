@@ -2,9 +2,6 @@ package Tree;
 
 import javafx.util.Pair;
 
-/**
- * Created by danial on 4/22/16.
- */
 public class BPTree<Key extends Comparable<? super Key>, Value> extends BTree<Key, Value>
 {
 

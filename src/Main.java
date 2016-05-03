@@ -1,18 +1,63 @@
 import Dictionaries.BtreeDictionary;
+import Dictionaries.HashMapDictionary;
+import Dictionaries.TrieDictionary;
+import Tree.BTree;
 
 public class Main
 {
 
     public static void main(String args[])
     {
-//        BTree<String, Integer> tree = new BTree<String, Integer>(2);
-//        for( int i = 0; i < 9000000; i++) {
-////            if( i == 3 )
-////                System.out.println("");
-//            tree.insert(String.valueOf(i), i);
-////            System.out.println("heap size:\t" + Runtime.getRuntime().totalMemory()/(1024*1024) + "\tfree memory:\t" + Runtime.getRuntime().freeMemory()/(1024*1024) + "\n");
-//        }
+//        bTreeTest();
+//        btreeDictionaryTest();
+//        trieDictionaryTest();
+        hashMapDictionaryTest();
+    }
 
+    private static void hashMapDictionaryTest()
+    {
+        HashMapDictionary hashMapDictionary = new HashMapDictionary();
+        for(int i = 0; i < 10; i++)
+            hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+        for(int i = 0; i < 10; i++)
+            hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 9; i++)
+            hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 8; i++)
+            hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 7; i++)
+            hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+//        System.out.println(trieDictionary);
+
+        for(int i = 0; i < 10; i++)
+            System.out.println(String.valueOf(i) + " --> " + hashMapDictionary.getHashMap().get(String.valueOf(i)));
+    }
+
+    private static void trieDictionaryTest()
+    {
+        TrieDictionary trieDictionary = new TrieDictionary();
+        for(int i = 0; i < 10; i++)
+            trieDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+        for(int i = 0; i < 10; i++)
+            trieDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 9; i++)
+            trieDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 8; i++)
+            trieDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 7; i++)
+            trieDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+//        System.out.println(trieDictionary);
+
+        for(int i = 0; i < 10; i++)
+            System.out.println(String.valueOf(i) + " --> " + trieDictionary.getTrie().get(String.valueOf(i)));
+    }
+
+    private static void btreeDictionaryTest()
+    {
         BtreeDictionary btreeDictionary = new BtreeDictionary(2);
         for(int i = 0; i < 10; i++)
             btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
@@ -30,21 +75,17 @@ public class Main
 
         for(int i = 0; i < 10; i++)
             System.out.println(String.valueOf(i) + " --> " + btreeDictionary.getbTree().search(String.valueOf(i)));
-//        Trie tree = new Trie();
-//        for( int i = 0; i < 4000; i++) {
-//            if( i == 10 ) {
+    }
+
+    private static void bTreeTest()
+    {
+                BTree<String, Integer> tree = new BTree<String, Integer>(2);
+        for( int i = 0; i < 9000000; i++) {
+//            if( i == 3 )
 //                System.out.println("");
-//            }
-//            tree.put(String.valueOf(i), i);
-//        }
-//
-//        Hashtable<String, Integer> hash = new Hashtable<String, Integer>();
-//        System.out.println(tree.toString()+"");
-
-//        RandomAccessFileManagement randomAccessFileWriter = new RandomAccessFileManagement("first.txt");
-//        randomAccessFileWriter.write(null);
-//        randomAccessFileWriter.read();
-
+            tree.insert(String.valueOf(i), i);
+//            System.out.println("heap size:\t" + Runtime.getRuntime().totalMemory()/(1024*1024) + "\tfree memory:\t" + Runtime.getRuntime().freeMemory()/(1024*1024) + "\n");
+        }
     }
 }
 
