@@ -11,6 +11,18 @@ public class BPTree<Key extends Comparable<? super Key>, Value> extends BTree<Ke
         root = new LeafNode(halfMaxSize, null);
     }
 
+    @Override
+    protected Value search(Key key, Node startingNode)
+    {
+        return null;
+    }
+
+    @Override
+    protected void update(Key key, Value value, Node startingNode)
+    {
+
+    }
+
     protected class LeafNode extends Node
     {
         protected LeafNode rightSibling, leftSibling;

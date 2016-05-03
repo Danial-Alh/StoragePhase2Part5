@@ -6,6 +6,7 @@ import java.util.Vector;
 
 public class BTree<Key extends Comparable<? super Key>, Value>
 {
+
     static int idCounter = 0;
     Node root;
     int depth;
@@ -15,6 +16,7 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         root = new Node(halfMaxSize, null);
         depth = 1;
     }
+
 
     public void insert(Key key, Value value)
     {
@@ -50,7 +52,7 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         return search(key, root);
     }
 
-    private Value search(Key key, Node startingNode)
+    protected Value search(Key key, Node startingNode)
     {
         if (startingNode == null)
             return null;
@@ -73,7 +75,7 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         update(key, value, root);
     }
 
-    private void update(Key key, Value value, Node startingNode)
+    protected void update(Key key, Value value, Node startingNode)
     {
         Node nextChild;
         int i1 = startingNode.binarySearchForLocationToAdd(key);
@@ -89,6 +91,8 @@ public class BTree<Key extends Comparable<? super Key>, Value>
             nextChild = startingNode.child.elementAt(i1);
         update(key, value, nextChild);
     }
+
+
 
     public String toString()
     {
@@ -132,8 +136,8 @@ public class BTree<Key extends Comparable<? super Key>, Value>
             this.MAX_SIZE = 2 * halfMaxSize - 1;
             this.parent = parent;
             this.id = ++idCounter;
-            keyValPair = new Vector<Pair<Key, Value>>();
-            child = new Vector<Node>();
+            keyValPair = new Vector<>();
+            child = new Vector<>();
         }
 
         public int getSize()
@@ -156,7 +160,11 @@ public class BTree<Key extends Comparable<? super Key>, Value>
             {
                 keyValPair.add(newNode);
                 child.add(smallerChild);
+                if(smallerChild != null)
+                    smallerChild.parent = this;
                 child.add(biggerChild);
+                if(biggerChild != null)
+                    biggerChild.parent = this;
             } else
             {
                 int location = binarySearchForLocationToAdd(newNode.getKey());
@@ -239,7 +247,8 @@ public class BTree<Key extends Comparable<? super Key>, Value>
             for (int i = offset; i <= MAX_SIZE; i++)
             {
                 if (getSize() - 1 < offset || child.size() - 1 < offset)
-                    System.out.println("ohhhh nooo");
+                    System.out.println("" +
+                            "ohhhh nooo");
                 if (i == offset) // first node
                 {
                     Node smallerChild = child.remove(offset), biggerChild = child.remove(offset);
@@ -257,4 +266,5 @@ public class BTree<Key extends Comparable<? super Key>, Value>
             }
         }
     }
+
 }

@@ -1,6 +1,7 @@
 import Dictionaries.BtreeDictionary;
 import Dictionaries.HashMapDictionary;
 import Dictionaries.TrieDictionary;
+import Tree.BPTree;
 import Tree.BTree;
 
 public class Main
@@ -8,10 +9,10 @@ public class Main
 
     public static void main(String args[])
     {
-//        bTreeTest();
+        bTreeTest();
 //        btreeDictionaryTest();
 //        trieDictionaryTest();
-        hashMapDictionaryTest();
+//        hashMapDictionaryTest();
     }
 
     private static void hashMapDictionaryTest()
@@ -79,13 +80,14 @@ public class Main
 
     private static void bTreeTest()
     {
-                BTree<String, Integer> tree = new BTree<String, Integer>(2);
-        for( int i = 0; i < 9000000; i++) {
-//            if( i == 3 )
-//                System.out.println("");
-            tree.insert(String.valueOf(i), i);
+        BTree<Integer, Integer> tree = new BTree<>(2);
+        for( int i = 0; i < 100000; i++) {
+            if( i == 9 )
+                System.out.println("");
+            tree.insert(i, i);
 //            System.out.println("heap size:\t" + Runtime.getRuntime().totalMemory()/(1024*1024) + "\tfree memory:\t" + Runtime.getRuntime().freeMemory()/(1024*1024) + "\n");
         }
+//        System.out.println(tree);
     }
 }
 
