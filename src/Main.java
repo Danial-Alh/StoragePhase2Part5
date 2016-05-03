@@ -1,9 +1,10 @@
-import Dictionaries.BptreeDictionary;
+//import Dictionaries.BptreeDictionary;
 import Dictionaries.BtreeDictionary;
 import Dictionaries.HashMapDictionary;
 import Dictionaries.TrieDictionary;
-import Tree.BPTree;
 import Tree.BTree;
+
+import java.util.HashSet;
 
 public class Main
 {
@@ -12,31 +13,31 @@ public class Main
     {
 //        bTreeTest();
 //        btreeDictionaryTest();
-        bptreeDictionaryTest();
+//        bptreeDictionaryTest();
 //        trieDictionaryTest();
 //        hashMapDictionaryTest();
     }
 
-    private static void bptreeDictionaryTest()
-    {
-        BptreeDictionary btreeDictionary = new BptreeDictionary(2);
-        for(int i = 0; i < 10; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
-
-        for(int i = 0; i < 10; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
-        for(int i = 0; i < 9; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
-        for(int i = 0; i < 8; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
-        for(int i = 0; i < 7; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
-
-        System.out.println(btreeDictionary);
-
-        for(int i = 0; i < 10; i++)
-            System.out.println(String.valueOf(i) + " --> " + btreeDictionary.getBpTree().search(String.valueOf(i)));
-    }
+//    private static void bptreeDictionaryTest()
+//    {
+//        BptreeDictionary btreeDictionary = new BptreeDictionary(2);
+//        for(int i = 0; i < 10; i++)
+//            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+//
+//        for(int i = 0; i < 10; i++)
+//            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+//        for(int i = 0; i < 9; i++)
+//            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+//        for(int i = 0; i < 8; i++)
+//            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+//        for(int i = 0; i < 7; i++)
+//            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+//
+//        System.out.println(btreeDictionary);
+//
+//        for(int i = 0; i < 10; i++)
+//            System.out.println(String.valueOf(i) + " --> " + btreeDictionary.getBpTree().search(String.valueOf(i)));
+//    }
 
     private static void hashMapDictionaryTest()
     {
