@@ -5,19 +5,28 @@ import javafx.util.Pair;
 /**
  * Created by danial on 4/22/16.
  */
-public class BPTree <Key extends Comparable<? super Key>, Value> extends BTree<Key, Value> {
+public class BPTree<Key extends Comparable<? super Key>, Value> extends BTree<Key, Value>
+{
+
+    public BPTree(int halfMaxSize)
+    {
+        super(halfMaxSize);
+        root = new LeafNode(halfMaxSize, null);
+    }
 
     protected class LeafNode extends Node
     {
         protected LeafNode rightSibling, leftSibling;
 
-        public LeafNode(int halfMaxSize, Node parent) {
+        public LeafNode(int halfMaxSize, Node parent)
+        {
             super(halfMaxSize, parent);
             leftSibling = rightSibling = null;
         }
 
         @Override
-        protected Node[] splitCurrentNode() {
+        protected Node[] splitCurrentNode()
+        {
             LeafNode newNode = new LeafNode(this.HALF_MAX_SIZE, this.parent);
             int victim = HALF_MAX_SIZE;
             int offset = victim;
@@ -33,13 +42,9 @@ public class BPTree <Key extends Comparable<? super Key>, Value> extends BTree<K
         }
 
         @Override
-        public String toString() {
+        public String toString()
+        {
             return "$$lref:" + (leftSibling == null ? -1 : leftSibling.id) + "$$" + super.toString() + "$$rref:" + (rightSibling == null ? -1 : rightSibling.id) + "$$";
         }
-    }
-
-    public BPTree(int halfMaxSize) {
-        super(halfMaxSize);
-        root = new LeafNode(halfMaxSize, null);
     }
 }

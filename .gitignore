@@ -3,3 +3,6 @@
 out/
 # Files
 *.iml
+*.html
+*.txt
+
