@@ -45,6 +45,8 @@ public class BTree<Key extends Comparable<? super Key>, Value>
 
     public Value search(Key key)
     {
+        if(root.getSize() == 0)
+            return null;
         return search(key, root);
     }
 
@@ -53,10 +55,12 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         if (startingNode == null)
             return null;
 
-        Node nextChild;
+        Node nextChild = null;
         int i1 = startingNode.binarySearchForLocationToAdd(key);
         if (i1 == startingNode.getSize())
             nextChild = startingNode.child.elementAt(i1);
+        else if(i1 == -1)
+            System.out.println("ohhhh my goood");
         else if(startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
             return startingNode.keyValPair.elementAt(i1).getValue();
         else

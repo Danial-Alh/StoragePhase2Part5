@@ -9,9 +9,9 @@ public class BtreeDictionary
 {
     private BTree<String, WordProperties> bTree;
 
-    public BtreeDictionary(int nodeSize)
+    public BtreeDictionary(int halfNodeSize)
     {
-        this.bTree = new BTree<>(nodeSize/2);
+        this.bTree = new BTree<>(halfNodeSize);
     }
 
     public void insertNodeIfnotExists(String word)
@@ -27,5 +27,11 @@ public class BtreeDictionary
             wordProperties.occurrences++;
             bTree.update(word, wordProperties);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return bTree.toString();
     }
 }

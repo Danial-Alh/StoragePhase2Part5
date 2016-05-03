@@ -30,7 +30,12 @@ public class WordProperties implements Sizeofable, Parsable<WordProperties>
     @Override
     public int sizeof()
     {
-        return 0;
+        return 4;
     }
 
+    @Override
+    public String toString()
+    {
+        return String.valueOf(occurrences);
+    }
 }

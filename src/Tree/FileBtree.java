@@ -213,7 +213,7 @@ public class FileBtree <Value extends Sizeofable>
                     newNode.insert(keyValPair.remove(offset)
                             , biggerChild, smallerChild);
                 } else
-                    newNode.insert(keyValPair.remove(offset), child.remove(offset), null);
+                    newNode.insert(keyValPair.remove(offset), child.remove(offset), -1);
             }
         }
 

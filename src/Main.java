@@ -1,3 +1,5 @@
+import Dictionaries.BtreeDictionary;
+
 public class Main
 {
 
@@ -11,6 +13,14 @@ public class Main
 ////            System.out.println("heap size:\t" + Runtime.getRuntime().totalMemory()/(1024*1024) + "\tfree memory:\t" + Runtime.getRuntime().freeMemory()/(1024*1024) + "\n");
 //        }
 
+        BtreeDictionary btreeDictionary = new BtreeDictionary(2);
+        for(int i = 0; i < 10; i++)
+            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+        for(int i = 0; i < 10; i++)
+            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+        System.out.println(btreeDictionary);
 //        Trie tree = new Trie();
 //        for( int i = 0; i < 4000; i++) {
 //            if( i == 10 ) {
