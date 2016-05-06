@@ -1,20 +1,56 @@
-import Dictionaries.BptreeDictionary;
-import Dictionaries.BtreeDictionary;
-import Dictionaries.HashMapDictionary;
-import Dictionaries.TrieDictionary;
-import Tree.BPTree;
+import Dictionaries.*;
 import Tree.BTree;
+import Tree.FileBtree;
 
 public class Main
 {
 
     public static void main(String args[])
     {
+//        try
+//        {
+//            if(new File("tempfile.bi").exists())
+//                new File("tempfile.bi").delete();
+//            RandomAccessFile randomAccessFileManagement = new RandomAccessFile("tempfile.bi", "rwd");
+//            randomAccessFileManagement.writeBytes(new String(new byte[11], "UTF-8"));
+////            randomAccessFileManagement.writeBytes("aaaaaaaa");
+//            int emptyBytes = 4;
+//            randomAccessFileManagement.write(new byte[emptyBytes]);
+//            randomAccessFileManagement.close();
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
 //        bTreeTest();
+        fileBTreeTest();
 //        btreeDictionaryTest();
-        bptreeDictionaryTest();
+//        bptreeDictionaryTest();
 //        trieDictionaryTest();
 //        hashMapDictionaryTest();
+    }
+
+    private static void fileBTreeTest()
+    {
+        FileBtree<WordProperties> tree = new FileBtree<>(10, 4, 2, WordProperties.class);
+        long start = System.currentTimeMillis();
+        for( int i = 0; i < 1000000; i++)
+        {
+            if( i == 9 )
+                System.out.println("");
+            try
+            {
+//                System.out.println("\n\ninserting new node: " + i);
+                tree.insert(String.valueOf(i), new WordProperties(1));
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+//            System.out.println("heap size:\t" + Runtime.getRuntime().totalMemory()/(1024*1024) + "\tfree memory:\t" + Runtime.getRuntime().freeMemory()/(1024*1024) + "\n");
+        }
+        long end = System.currentTimeMillis();
+
+        System.out.println(/*tree + "\n"+*/
+        "time elapsed: " + (end-start)/60000.0);
     }
 
     private static void bptreeDictionaryTest()
