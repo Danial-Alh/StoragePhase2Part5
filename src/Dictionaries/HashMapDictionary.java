@@ -2,15 +2,14 @@ package Dictionaries;
 
 import java.util.HashMap;
 
-/**
- * Created by danial on 5/3/16.
- */
-public class HashMapDictionary
+public class HashMapDictionary extends FileIndexableDictionary
 {
     private HashMap<String, WordProperties> hashMap;
 
-    public HashMapDictionary()
+
+    public HashMapDictionary(int halfNodeSize, int keyMaxSize, int valueMaxSize, boolean useFileIndex)
     {
+        super(halfNodeSize, keyMaxSize, valueMaxSize, useFileIndex);
         this.hashMap = new HashMap<>();
     }
 
@@ -19,21 +18,21 @@ public class HashMapDictionary
         return hashMap;
     }
 
-    public void insertNodeIfnotExists(String word)
+    @Override
+    protected void addItToRam(String word)
     {
-        WordProperties wordProperties = new WordProperties(0);
-        wordProperties = hashMap.putIfAbsent(word, wordProperties);
+        hashMap.put(word, new WordProperties(1));
+    }
 
-        if(wordProperties != null)
-        {
-            wordProperties.occurrences++;
-//            hashMap.update(word, wordProperties);
-        }
+    @Override
+    protected WordProperties searchDataOnRam(String word)
+    {
+        return hashMap.get(word);
     }
 
     @Override
     public String toString()
     {
-        return hashMap.toString();
+        return hashMap.toString() + super.toString();
     }
 }

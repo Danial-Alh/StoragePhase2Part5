@@ -1,43 +1,37 @@
 package Dictionaries;
 
 import Tree.BPTree;
-import Tree.BTree;
 
-/**
- * Created by danial on 5/3/16.
- */
-public class BptreeDictionary
+public class BptreeDictionary extends FileIndexableDictionary
 {
-    public BPTree<String, WordProperties> getBpTree()
-    {
-        return bpTree;
-    }
-
     private BPTree<String, WordProperties> bpTree;
 
-    public BptreeDictionary(int halfNodeSize)
+    public BptreeDictionary(int halfNodeSize, int keyMaxSize, int valueMaxSize, boolean useFileIndex)
     {
+        super(halfNodeSize, keyMaxSize, valueMaxSize, useFileIndex);
         this.bpTree = new BPTree<>(halfNodeSize);
     }
 
-    public void insertNodeIfnotExists(String word)
+    @Override
+    protected void addItToRam(String word)
     {
-        WordProperties wordProperties = bpTree.search(word);
-        if(wordProperties == null)
-        {
-            wordProperties = new WordProperties(0);
-            bpTree.insert(word, wordProperties);
-        }
-        else
-        {
-            wordProperties.occurrences++;
-//            bpTree.update(word, wordProperties);
-        }
+        bpTree.insert(word, new WordProperties(1));
+    }
+
+    @Override
+    protected WordProperties searchDataOnRam(String word)
+    {
+        return bpTree.search(word);
     }
 
     @Override
     public String toString()
     {
-        return bpTree.toString();
+        return bpTree.toString() + super.toString();
+    }
+
+    public BPTree<String, WordProperties> getBpTree()
+    {
+        return bpTree;
     }
 }

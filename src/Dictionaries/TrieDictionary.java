@@ -1,17 +1,14 @@
 package Dictionaries;
 
-import Tree.BTree;
 import com.sun.org.apache.xml.internal.utils.Trie;
 
-/**
- * Created by danial on 5/3/16.
- */
-public class TrieDictionary
+public class TrieDictionary extends FileIndexableDictionary
 {
     private Trie trie;
 
-    public TrieDictionary()
+    public TrieDictionary(int halfNodeSize, int keyMaxSize, int valueMaxSize, boolean useFileIndex)
     {
+        super(halfNodeSize, keyMaxSize, valueMaxSize, useFileIndex);
         this.trie = new Trie();
     }
 
@@ -20,24 +17,21 @@ public class TrieDictionary
         return trie;
     }
 
-    public void insertNodeIfnotExists(String word)
+    @Override
+    protected void addItToRam(String word)
     {
-        WordProperties wordProperties = (WordProperties) trie.get(word);
-        if(wordProperties == null)
-        {
-            wordProperties = new WordProperties(0);
-            trie.put(word, wordProperties);
-        }
-        else
-        {
-            wordProperties.occurrences++;
-//            trie.update(word, wordProperties);
-        }
+        trie.put(word, new WordProperties(1));
+    }
+
+    @Override
+    protected WordProperties searchDataOnRam(String word)
+    {
+        return (WordProperties) trie.get(word);
     }
 
     @Override
     public String toString()
     {
-        return trie.toString();
+        return trie.toString() + super.toString();
     }
 }

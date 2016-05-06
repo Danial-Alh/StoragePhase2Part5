@@ -4,39 +4,34 @@ import Tree.FileBtree;
 
 public class Main
 {
-
+    public static boolean usefile = true;
+    public static int keyS = 10
+            , valS = 4
+            , halfS = 2
+            , range = 10000;
     public static void main(String args[])
     {
-//        try
-//        {
-//            if(new File("tempfile.bi").exists())
-//                new File("tempfile.bi").delete();
-//            RandomAccessFile randomAccessFileManagement = new RandomAccessFile("tempfile.bi", "rwd");
-//            randomAccessFileManagement.writeBytes(new String(new byte[11], "UTF-8"));
-////            randomAccessFileManagement.writeBytes("aaaaaaaa");
-//            int emptyBytes = 4;
-//            randomAccessFileManagement.write(new byte[emptyBytes]);
-//            randomAccessFileManagement.close();
-//        } catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
+        long start = System.currentTimeMillis();
 //        bTreeTest();
-        fileBTreeTest();
+//        fileBTreeDictionaryTest();
 //        btreeDictionaryTest();
 //        bptreeDictionaryTest();
-//        trieDictionaryTest();
+        trieDictionaryTest();
 //        hashMapDictionaryTest();
+        long end = System.currentTimeMillis();
+
+        System.out.println("minutes elapsed: " + (end-start)/60000.0);
+        System.out.println("seconds elapsed: " + (end-start)/1000.0);
     }
 
-    private static void fileBTreeTest()
+    private static void fileBTreeDictionaryTest()
     {
-        long start = System.currentTimeMillis();
-        FileBtreeDictionary fileBtreeDictionary = new FileBtreeDictionary(2);
-        for(int i = 0; i < 10; i++)
+
+        FileBtreeDictionary fileBtreeDictionary = new FileBtreeDictionary(halfS);
+        for(int i = 0; i < range; i++)
             fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < range; i++)
             fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
         for(int i = 0; i < 9; i++)
             fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
@@ -45,44 +40,39 @@ public class Main
         for(int i = 0; i < 7; i++)
             fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        System.out.println(fileBtreeDictionary);
+        printFileBtree(fileBtreeDictionary.getFileBtree());
 
-        for(int i = 0; i < 10; i++)
-            System.out.println(String.valueOf(i) + " --> " + fileBtreeDictionary.getFileBtree().search(String.valueOf(i)));
-        long end = System.currentTimeMillis();
-
-        System.out.println(/*tree + "\n"+*/
-        "time elapsed: " + (end-start)/60000.0);
     }
 
     private static void bptreeDictionaryTest()
     {
-        BptreeDictionary btreeDictionary = new BptreeDictionary(2);
-        for(int i = 0; i < 10; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        BptreeDictionary bptreeDictionary = new BptreeDictionary(halfS, keyS, valS, usefile);
+        for(int i = 0; i < range; i++)
+            bptreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        for(int i = 0; i < 10; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < range; i++)
+            bptreeDictionary.insertNodeIfnotExists(String.valueOf(i));
         for(int i = 0; i < 9; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+            bptreeDictionary.insertNodeIfnotExists(String.valueOf(i));
         for(int i = 0; i < 8; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+            bptreeDictionary.insertNodeIfnotExists(String.valueOf(i));
         for(int i = 0; i < 7; i++)
-            btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+            bptreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        System.out.println(btreeDictionary);
+        for(int i = 0; i < range; i++)
+            System.out.println(String.valueOf(i) + " --> " + bptreeDictionary.getBpTree().search(String.valueOf(i)));
 
-        for(int i = 0; i < 10; i++)
-            System.out.println(String.valueOf(i) + " --> " + btreeDictionary.getBpTree().search(String.valueOf(i)));
+        printFileBtree(bptreeDictionary.getFileBtree());
+
     }
 
     private static void hashMapDictionaryTest()
     {
-        HashMapDictionary hashMapDictionary = new HashMapDictionary();
-        for(int i = 0; i < 10; i++)
+        HashMapDictionary hashMapDictionary = new HashMapDictionary(halfS, keyS, valS, usefile);
+        for(int i = 0; i < range; i++)
             hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < range; i++)
             hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
         for(int i = 0; i < 9; i++)
             hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
@@ -91,19 +81,19 @@ public class Main
         for(int i = 0; i < 7; i++)
             hashMapDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-//        System.out.println(trieDictionary);
-
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < range; i++)
             System.out.println(String.valueOf(i) + " --> " + hashMapDictionary.getHashMap().get(String.valueOf(i)));
+
+        printFileBtree(hashMapDictionary.getFileBtree());
     }
 
     private static void trieDictionaryTest()
     {
-        TrieDictionary trieDictionary = new TrieDictionary();
-        for(int i = 0; i < 10; i++)
+        TrieDictionary trieDictionary = new TrieDictionary(halfS, keyS, valS, usefile);
+        for(int i = 0; i < range; i++)
             trieDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < range; i++)
             trieDictionary.insertNodeIfnotExists(String.valueOf(i));
         for(int i = 0; i < 9; i++)
             trieDictionary.insertNodeIfnotExists(String.valueOf(i));
@@ -112,19 +102,18 @@ public class Main
         for(int i = 0; i < 7; i++)
             trieDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-//        System.out.println(trieDictionary);
-
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < range; i++)
             System.out.println(String.valueOf(i) + " --> " + trieDictionary.getTrie().get(String.valueOf(i)));
+        printFileBtree(trieDictionary.getFileBtree());
     }
 
     private static void btreeDictionaryTest()
     {
-        BtreeDictionary btreeDictionary = new BtreeDictionary(2);
-        for(int i = 0; i < 10; i++)
+        BtreeDictionary btreeDictionary = new BtreeDictionary(halfS, keyS, valS, usefile);
+        for(int i = 0; i < range; i++)
             btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < range; i++)
             btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
         for(int i = 0; i < 9; i++)
             btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
@@ -133,22 +122,28 @@ public class Main
         for(int i = 0; i < 7; i++)
             btreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 
-        System.out.println(btreeDictionary);
-
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < range; i++)
             System.out.println(String.valueOf(i) + " --> " + btreeDictionary.getbTree().search(String.valueOf(i)));
+        printFileBtree(btreeDictionary.getFileBtree());
     }
 
     private static void bTreeTest()
     {
-        BTree<Integer, Integer> tree = new BTree<>(2);
-        for( int i = 0; i < 100000; i++) {
+        BTree<Integer, Integer> tree = new BTree<>(halfS);
+        for( int i = 0; i < range; i++) {
             if( i == 9 )
                 System.out.println("");
             tree.insert(i, i);
 //            System.out.println("heap size:\t" + Runtime.getRuntime().totalMemory()/(1024*1024) + "\tfree memory:\t" + Runtime.getRuntime().freeMemory()/(1024*1024) + "\n");
         }
 //        System.out.println(tree);
+    }
+
+    private static void printFileBtree(FileBtree<WordProperties> fileBtree)
+    {
+        System.out.println("\n\n*****FileBtree*****\n\n");
+        for(int i = 0; i < range; i++)
+            System.out.println(String.valueOf(i) + " --> " + fileBtree.search(String.valueOf(i)));
     }
 }
 
