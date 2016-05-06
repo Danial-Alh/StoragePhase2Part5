@@ -31,22 +31,24 @@ public class Main
 
     private static void fileBTreeTest()
     {
-        FileBtree<WordProperties> tree = new FileBtree<>(10, 4, 2, WordProperties.class);
         long start = System.currentTimeMillis();
-        for( int i = 0; i < 1000000; i++)
-        {
-            if( i == 9 )
-                System.out.println("");
-            try
-            {
-//                System.out.println("\n\ninserting new node: " + i);
-                tree.insert(String.valueOf(i), new WordProperties(1));
-            } catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-//            System.out.println("heap size:\t" + Runtime.getRuntime().totalMemory()/(1024*1024) + "\tfree memory:\t" + Runtime.getRuntime().freeMemory()/(1024*1024) + "\n");
-        }
+        FileBtreeDictionary fileBtreeDictionary = new FileBtreeDictionary(2);
+        for(int i = 0; i < 10; i++)
+            fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+        for(int i = 0; i < 10; i++)
+            fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 9; i++)
+            fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 8; i++)
+            fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+        for(int i = 0; i < 7; i++)
+            fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
+
+        System.out.println(fileBtreeDictionary);
+
+        for(int i = 0; i < 10; i++)
+            System.out.println(String.valueOf(i) + " --> " + fileBtreeDictionary.getFileBtree().search(String.valueOf(i)));
         long end = System.currentTimeMillis();
 
         System.out.println(/*tree + "\n"+*/
