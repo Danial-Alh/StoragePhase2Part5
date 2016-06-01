@@ -136,7 +136,6 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         protected final int HALF_MAX_SIZE, MAX_SIZE;
         protected Vector<Pair<Key, Value>> keyValPair;
         protected Vector<Node> child;
-        protected Vector<Long> fileChild;
         protected Node parent;
         protected int id;
 
@@ -275,33 +274,6 @@ public class BTree<Key extends Comparable<? super Key>, Value>
                 newNode.parent = root;
                 depth++;
             }
-        }
-
-        public void insertFromFileNodes(Pair<Key, Value> newData, Long smallerChildPointer, Long biggerChildPointer)
-        {
-            ExtendedFileBtree<Value> extendedFileBtree = new ExtendedFileBtree<Value>(1,1,1,Value.class);
-
-            int location = binarySearchForLocationToAdd(newData.getKey());
-            if (location == keyValPair.size())
-            {
-                keyValPair.add(newData);
-                fileChild.add(biggerChildPointer);
-            } else
-            {
-                keyValPair.insertElementAt(newData, location);
-                fileChild.insertElementAt(biggerChildPointer, location + 1);
-            }
-            if (biggerChildPointer != null)
-            {
-                extendedFileBtree.roots.get(biggerChildPointer).parentPointer = this;
-            }
-            if (smallerChildPointer != null)
-            {
-                fileChild.set(location, smallerChildPointer);
-                extendedFileBtree.roots.get(smallerChildPointer).parentPointer = this;
-            }
-            if (getSize() > MAX_SIZE)
-                splitCurrentNode();
         }
     }
 

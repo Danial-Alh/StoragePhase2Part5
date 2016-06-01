@@ -126,9 +126,9 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
     }
 
 
-    protected boolean thisDataExists(String key, DataLocation newLoc)
+    protected boolean thisDataExists(String key, FileDataLocation newLoc)
     {
-        if(newLoc.offset == newLoc.node.getSize() || key.compareTo(newLoc.node.keyValPair.elementAt(newLoc.offset).getKey()) != 0)
+        if(newLoc.offset == newLoc. node.getSize() || key.compareTo(newLoc.node.keyValPair.elementAt(newLoc.offset).getKey()) != 0)
             return false;
         return true;
     }
@@ -162,18 +162,18 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         createParentIfRequired(oldNodeTemplate, newNodeTemplate);
     }
 
-    protected DataLocation findLoc(String key, NodeTemplate startingNodeTemplate)
+    protected FileDataLocation findLoc(String key, NodeTemplate startingNodeTemplate)
     {
-        if(startingNodeTemplate.getSize() == 0) return new DataLocation(startingNodeTemplate, 0);
+        if(startingNodeTemplate.getSize() == 0) return new FileDataLocation(startingNodeTemplate, 0);
         Long nextChild;
         int i1 = startingNodeTemplate.binarySearchForLocationToAdd(key);
         if (i1 == startingNodeTemplate.getSize())
             nextChild = startingNodeTemplate.child.elementAt(i1);
         else if (startingNodeTemplate.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
-            return new DataLocation(startingNodeTemplate, i1);
+            return new FileDataLocation(startingNodeTemplate, i1);
         else
             nextChild = startingNodeTemplate.child.elementAt(i1);
-        return (nextChild == null ? new DataLocation(startingNodeTemplate, i1) : findLoc(key, getNode(nextChild)));
+        return (nextChild == null ? new FileDataLocation(startingNodeTemplate, i1) : findLoc(key, getNode(nextChild)));
     }
 
 //    protected Value search(String key, NodeTemplate startingNodeTemplate)
@@ -232,15 +232,11 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         return currentNodeTemplate.toString() + "\t" + toString(nodeTemplateQ, stringDepth);
     }
 
-    class DataLocation
+    class FileDataLocation extends DataLocation<NodeTemplate>
     {
-        NodeTemplate node;
-        int offset;
-
-        public DataLocation(NodeTemplate node, int offset)
+        public FileDataLocation(NodeTemplate node, int offset)
         {
-            this.node = node;
-            this.offset = offset;
+            super(node, offset);
         }
     }
 
