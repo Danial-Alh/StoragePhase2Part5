@@ -1,5 +1,6 @@
 package Dictionaries;
 
+import Primitives.WordProperties;
 import Tree.FileBtree;
 
 public abstract class FileIndexableDictionary
@@ -68,7 +69,7 @@ public abstract class FileIndexableDictionary
 
     protected void updateRamData(WordProperties wordProperties)
     {
-        wordProperties.occurrences++;
+        wordProperties.setOccurrences(wordProperties.getOccurrences()+1);
 //            bpTree.update(word, wordProperties);
     }
 

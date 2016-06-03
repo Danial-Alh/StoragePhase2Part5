@@ -1,4 +1,4 @@
-package Tree;
+package Primitives;
 
 /**
  * Created by danial on 5/2/16.

@@ -1,5 +1,7 @@
 package Dictionaries;
 
+import Primitives.WordProperties;
+
 import java.util.HashMap;
 
 public class HashMapDictionary extends FileIndexableDictionary

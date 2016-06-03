@@ -1,6 +1,7 @@
 package Dictionaries;
 
 
+import Primitives.WordProperties;
 import Tree.FileBtree;
 
 /**
@@ -37,7 +38,7 @@ public class FileBtreeDictionary
         }
         else
         {
-            wordProperties.occurrences++;
+            wordProperties.setOccurrences(wordProperties.getOccurrences()+1);
 //            fileBtree.update(word, wordProperties);
         }
     }

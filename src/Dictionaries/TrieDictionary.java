@@ -1,5 +1,6 @@
 package Dictionaries;
 
+import Primitives.WordProperties;
 import com.sun.org.apache.xml.internal.utils.Trie;
 
 public class TrieDictionary extends FileIndexableDictionary

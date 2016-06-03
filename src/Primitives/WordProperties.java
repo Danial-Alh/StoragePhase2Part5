@@ -1,13 +1,23 @@
-package Dictionaries;
+package Primitives;
 
-import Tree.Parsable;
-import Tree.Sizeofable;
+import Primitives.Parsable;
+import Primitives.Sizeofable;
 
 import java.math.BigInteger;
 
 public class WordProperties implements Sizeofable, Parsable
 {
     int occurrences;
+
+    public int getOccurrences()
+    {
+        return occurrences;
+    }
+
+    public void setOccurrences(int occurrences)
+    {
+        this.occurrences = occurrences;
+    }
 
     public WordProperties(int occurrences)
     {

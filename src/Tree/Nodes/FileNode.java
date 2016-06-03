@@ -1,15 +1,14 @@
-package Tree;
+package Tree.Nodes;
 
 import FileManagement.RandomAccessFileManagement;
+import Primitives.Parsable;
+import Primitives.Sizeofable;
 import javafx.util.Pair;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Vector;
 
-/**
- * Created by danial on 6/2/16.
- */
 public class FileNode <Value extends Sizeofable & Parsable>
 {
     protected Vector<Pair<String, Value>> keyValPair;
@@ -19,6 +18,41 @@ public class FileNode <Value extends Sizeofable & Parsable>
     protected Long parent, myPointer;
     protected final Class valueClassType;
     protected int id;
+
+    public Vector<Pair<String, Value>> getKeyValPair()
+    {
+        return keyValPair;
+    }
+
+    public void setKeyValPair(Vector<Pair<String, Value>> keyValPair)
+    {
+        this.keyValPair = keyValPair;
+    }
+
+    public Vector<Long> getChild()
+    {
+        return child;
+    }
+
+    public void setChild(Vector<Long> child)
+    {
+        this.child = child;
+    }
+
+    public Long getParent()
+    {
+        return parent;
+    }
+
+    public void setParent(Long parent)
+    {
+        this.parent = parent;
+    }
+
+    public void setMyPointer(Long myPointer)
+    {
+        this.myPointer = myPointer;
+    }
 
     public FileNode(int key_max_size, int value_max_size, int halfMaxSize, Long parent, Class valueClassType)
     {
@@ -34,7 +68,7 @@ public class FileNode <Value extends Sizeofable & Parsable>
         child = new Vector<>();
     }
 
-    protected Long getMyPointer()
+    public Long getMyPointer()
     {
         return myPointer;
     }
@@ -57,7 +91,7 @@ public class FileNode <Value extends Sizeofable & Parsable>
         return result;
     }
 
-    protected int binarySearchForLocationToAdd(String key)
+    public int binarySearchForLocationToAdd(String key)
     {
 
         return getSize() == 0 ? 0 :
@@ -105,7 +139,7 @@ public class FileNode <Value extends Sizeofable & Parsable>
     }
 
 
-    protected void fetchNodeFromHard(Long myPointer)
+    public void fetchNodeFromHard(Long myPointer)
     {
         RandomAccessFile instance = RandomAccessFileManagement.getMyInstance();
         if (myPointer == null)
@@ -152,7 +186,7 @@ public class FileNode <Value extends Sizeofable & Parsable>
         }
     }
 
-    protected void commitChanges()
+    public void commitChanges()
     {
 //            System.out.println("committing, pointer: " + myPointer);
         RandomAccessFile instance = RandomAccessFileManagement.getMyInstance();

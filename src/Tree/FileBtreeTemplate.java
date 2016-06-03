@@ -1,10 +1,11 @@
 package Tree;
 
-import FileManagement.RandomAccessFileManagement;
+import Primitives.Parsable;
+import Primitives.Sizeofable;
+import Tree.Nodes.DataLocations.FileDataLocation;
+import Tree.Nodes.FileNode;
 import javafx.util.Pair;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -14,7 +15,7 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
     protected final int HALF_MAX_SIZE, MAX_SIZE;
     protected final Class valueClassType;
     protected int depth;
-    protected HashMap<Long, FileNode <Value>> nodeCache;
+    protected HashMap<Long, FileNode<Value>> nodeCache;
 
     public FileBtreeTemplate(int keyMaxSize, int valueMaxSize, int halfMaxSize, Class valueClassType)
     {
@@ -39,44 +40,44 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 //        System.out.println("adding data, pointer: " + startingNode.myPointer + " node size: " + startingNode.getSize());
         if (startingNode.getSize() == 0)
         {
-            startingNode.keyValPair.add(newData);
-            startingNode.child.add(smallerChild);
+            startingNode.getKeyValPair().add(newData);
+            startingNode.getChild().add(smallerChild);
             if (smallerChild != null)
             {
                 FileNode <Value> smallerChildNodeTemplate = getNode(smallerChild);
-                smallerChildNodeTemplate.parent = startingNode.getMyPointer();
+                smallerChildNodeTemplate.setParent(startingNode.getMyPointer());
                 smallerChildNodeTemplate.commitChanges();
             }
-            startingNode.child.add(biggerChild);
+            startingNode.getChild().add(biggerChild);
             if (biggerChild != null)
             {
                 FileNode <Value> biggerChildNodeTemplate = getNode(biggerChild);
-                biggerChildNodeTemplate.parent = startingNode.getMyPointer();
+                biggerChildNodeTemplate.setParent(startingNode.getMyPointer());
                 biggerChildNodeTemplate.commitChanges();
             }
         } else
         {
             int location = startingNode.binarySearchForLocationToAdd(newData.getKey());
-            if (location == startingNode.keyValPair.size())
+            if (location == startingNode.getKeyValPair().size())
             {
-                startingNode.keyValPair.add(newData);
-                startingNode.child.add(biggerChild);
+                startingNode.getKeyValPair().add(newData);
+                startingNode.getChild().add(biggerChild);
             } else
             {
-                startingNode.keyValPair.insertElementAt(newData, location);
-                startingNode.child.insertElementAt(biggerChild, location + 1);
+                startingNode.getKeyValPair().insertElementAt(newData, location);
+                startingNode.getChild().insertElementAt(biggerChild, location + 1);
             }
             if (biggerChild != null)
             {
                 FileNode <Value> biggerChildNodeTemplate = getNode(biggerChild);
-                biggerChildNodeTemplate.parent = startingNode.getMyPointer();
+                biggerChildNodeTemplate.setParent(startingNode.getMyPointer());
                 biggerChildNodeTemplate.commitChanges();
             }
             if (smallerChild != null)
             {
-                startingNode.child.set(location, smallerChild);
+                startingNode.getChild().set(location, smallerChild);
                 FileNode <Value> smallerChildNodeTemplate = getNode(smallerChild);
-                smallerChildNodeTemplate.parent = startingNode.getMyPointer();
+                smallerChildNodeTemplate.setParent(startingNode.getMyPointer());
                 smallerChildNodeTemplate.commitChanges();
             }
             if (startingNode.getSize() > MAX_SIZE)
@@ -101,13 +102,13 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 
     protected Value returnValue(String key, FileNode <Value> startingNodeTemplate, int i1)
     {
-        return startingNodeTemplate.keyValPair.elementAt(i1).getValue();
+        return startingNodeTemplate.getKeyValPair().elementAt(i1).getValue();
     }
 
     protected void updateValue(String key, Value value, FileNode <Value> startingNodeTemplate, int i1)
     {
-        Pair<String, Value> oldKeyValuePair = startingNodeTemplate.keyValPair.elementAt(i1);
-        startingNodeTemplate.keyValPair.set(i1, new Pair<>(oldKeyValuePair.getKey(), value));
+        Pair<String, Value> oldKeyValuePair = startingNodeTemplate.getKeyValPair().elementAt(i1);
+        startingNodeTemplate.getKeyValPair().set(i1, new Pair<>(oldKeyValuePair.getKey(), value));
         startingNodeTemplate.commitChanges();
     }
 
@@ -127,14 +128,15 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 
     protected boolean thisDataExists(String key, FileDataLocation<Value> newLoc)
     {
-        if(newLoc.offset == newLoc.node.getSize() || key.compareTo(newLoc.node.keyValPair.elementAt(newLoc.offset).getKey()) != 0)
+        if(newLoc.getOffset() == newLoc.getNode().getSize() ||
+                key.compareTo(newLoc.getNode().getKeyValPair().elementAt(newLoc.getOffset()).getKey()) != 0)
             return false;
         return true;
     }
 
     protected FileNode <Value>[] splitCurrentNode(FileNode <Value> startingNode)
     {
-        FileNode <Value> newNodeTemplate = createNewLeafNode(startingNode.parent);
+        FileNode <Value> newNodeTemplate = createNewLeafNode(startingNode.getParent());
         int victim = HALF_MAX_SIZE;
         int offset = victim + 1;
         moveDataToSiblingAndCreateParentIfRequired(startingNode, newNodeTemplate, offset);
@@ -147,16 +149,16 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
     {
         for (int i = offset; i <= MAX_SIZE; i++)
         {
-            if (oldNodeTemplate.getSize() - 1 < offset || oldNodeTemplate.child.size() - 1 < offset)
+            if (oldNodeTemplate.getSize() - 1 < offset || oldNodeTemplate.getChild().size() - 1 < offset)
                 System.out.println("" +
                         "ohhhh nooo");
             if (i == offset) // first node
             {
-                Long smallerChild = oldNodeTemplate.child.remove(offset), biggerChild = oldNodeTemplate.child.remove(offset);
-                insert(newNodeTemplate, oldNodeTemplate.keyValPair.remove(offset)
+                Long smallerChild = oldNodeTemplate.getChild().remove(offset), biggerChild = oldNodeTemplate.getChild().remove(offset);
+                insert(newNodeTemplate, oldNodeTemplate.getKeyValPair().remove(offset)
                         , biggerChild, smallerChild);
             } else
-                insert(newNodeTemplate, oldNodeTemplate.keyValPair.remove(offset), oldNodeTemplate.child.remove(offset), null);
+                insert(newNodeTemplate, oldNodeTemplate.getKeyValPair().remove(offset), oldNodeTemplate.getChild().remove(offset), null);
         }
         createParentIfRequired(oldNodeTemplate, newNodeTemplate);
     }
@@ -167,11 +169,11 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         Long nextChild;
         int i1 = startingNodeTemplate.binarySearchForLocationToAdd(key);
         if (i1 == startingNodeTemplate.getSize())
-            nextChild = startingNodeTemplate.child.elementAt(i1);
-        else if (startingNodeTemplate.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
+            nextChild = startingNodeTemplate.getChild().elementAt(i1);
+        else if (startingNodeTemplate.getKeyValPair().elementAt(i1).getKey().compareTo(key) == 0)
             return new FileDataLocation<Value>(startingNodeTemplate, i1);
         else
-            nextChild = startingNodeTemplate.child.elementAt(i1);
+            nextChild = startingNodeTemplate.getChild().elementAt(i1);
         return (nextChild == null ? new FileDataLocation<Value>(startingNodeTemplate, i1) : findLoc(key, getNode(nextChild)));
     }
 
@@ -183,13 +185,13 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 //        Long nextChild = null;
 //        int i1 = startingNodeTemplate.binarySearchForLocationToAdd(key);
 //        if (i1 == startingNodeTemplate.getSize())
-//            nextChild = startingNodeTemplate.child.elementAt(i1);
+//            nextChild = startingNodeTemplate.getChild().elementAt(i1);
 //        else if (i1 == -1)
 //            System.out.println("ohhhh my goood");
-//        else if (startingNodeTemplate.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
+//        else if (startingNodeTemplate.getKeyValPair().elementAt(i1).getKey().compareTo(key) == 0)
 //            return returnValue(key, startingNodeTemplate, i1);
 //        else
-//            nextChild = startingNodeTemplate.child.elementAt(i1);
+//            nextChild = startingNodeTemplate.getChild().elementAt(i1);
 //        return search(key, getNode(nextChild));
 //    }
 
@@ -199,13 +201,13 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 //        FileNode <Value> nextChild;
 //        int i1 = startingNodeTemplate.binarySearchForLocationToAdd(key);
 //        if (i1 == startingNodeTemplate.getSize())
-//            nextChild = startingNodeTemplate.child.elementAt(i1);
-//        else if (startingNodeTemplate.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
+//            nextChild = startingNodeTemplate.getChild().elementAt(i1);
+//        else if (startingNodeTemplate.getKeyValPair().elementAt(i1).getKey().compareTo(key) == 0)
 //        {
 //            updateValue(key, value, startingNodeTemplate, i1);
 //            return;
 //        } else
-//            nextChild = getNode(startingNodeTemplate.child.elementAt(i1));
+//            nextChild = getNode(startingNodeTemplate.getChild().elementAt(i1));
 //        update(key, value, nextChild);
 //    }
 
@@ -223,9 +225,9 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
             }
             return "\n" + toString(nodeTemplateQ, stringDepth);
         }
-        for (int i = 0; i < currentNodeTemplate.child.size(); i++)
+        for (int i = 0; i < currentNodeTemplate.getChild().size(); i++)
         {
-            Long childNode = currentNodeTemplate.child.elementAt(i);
+            Long childNode = currentNodeTemplate.getChild().elementAt(i);
             if (childNode != null) nodeTemplateQ.add(getNode(childNode));
         }
         return currentNodeTemplate.toString() + "\t" + toString(nodeTemplateQ, stringDepth);

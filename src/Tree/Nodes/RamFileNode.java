@@ -1,5 +1,7 @@
-package Tree;
+package Tree.Nodes;
 
+import Primitives.Parsable;
+import Primitives.Sizeofable;
 import javafx.util.Pair;
 
 import java.util.Vector;
@@ -10,6 +12,57 @@ import java.util.Vector;
 public class RamFileNode <Value extends Sizeofable & Parsable>
 {
     boolean childAreOnFile;
+
+    public boolean isChildAreOnFile()
+    {
+        return childAreOnFile;
+    }
+
+    public void setChildAreOnFile(boolean childAreOnFile)
+    {
+        this.childAreOnFile = childAreOnFile;
+    }
+
+    public Vector<Pair<String, Value>> getKeyValPair()
+    {
+        return keyValPair;
+    }
+
+    public void setKeyValPair(Vector<Pair<String, Value>> keyValPair)
+    {
+        this.keyValPair = keyValPair;
+    }
+
+    public Vector<RamFileNode> getChild()
+    {
+        return child;
+    }
+
+    public void setChild(Vector<RamFileNode> child)
+    {
+        this.child = child;
+    }
+
+    public Vector<Long> getFileChild()
+    {
+        return fileChild;
+    }
+
+    public void setFileChild(Vector<Long> fileChild)
+    {
+        this.fileChild = fileChild;
+    }
+
+    public RamFileNode getParent()
+    {
+        return parent;
+    }
+
+    public void setParent(RamFileNode parent)
+    {
+        this.parent = parent;
+    }
+
     //        protected final int HALF_MAX_SIZE, MAX_SIZE;
     protected Vector<Pair<String, Value>> keyValPair;
     protected Vector<RamFileNode> child;
@@ -45,7 +98,7 @@ public class RamFileNode <Value extends Sizeofable & Parsable>
         return result;
     }
 
-    protected int binarySearchForLocationToAdd(String key)
+    public int binarySearchForLocationToAdd(String key)
     {
 
         return getSize() == 0 ? 0 :
@@ -92,7 +145,7 @@ public class RamFileNode <Value extends Sizeofable & Parsable>
             return binarySearchForExistence(key, mid + 1, to);
     }
 
-    protected RamFileNode getMyPointer()
+    public RamFileNode getMyPointer()
     {
         return this;
     }

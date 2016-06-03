@@ -1,5 +1,6 @@
 package Dictionaries;
 
+import Primitives.WordProperties;
 import Tree.BTree;
 
 public class BtreeDictionary extends FileIndexableDictionary

@@ -1,4 +1,8 @@
-package Tree;
+package Tree.Nodes.DataLocations;
+
+import Tree.Nodes.FileNode;
+import Primitives.Parsable;
+import Primitives.Sizeofable;
 
 public class FileDataLocation<Value extends Sizeofable & Parsable> extends DataLocation<FileNode<Value>>
 {

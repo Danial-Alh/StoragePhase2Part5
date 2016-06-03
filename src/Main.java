@@ -1,4 +1,5 @@
 import Dictionaries.*;
+import Primitives.WordProperties;
 import Tree.BTree;
 import Tree.FileBtree;
 

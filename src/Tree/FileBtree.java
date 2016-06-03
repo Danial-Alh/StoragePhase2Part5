@@ -1,5 +1,9 @@
 package Tree;
 
+import Primitives.Parsable;
+import Primitives.Sizeofable;
+import Tree.Nodes.DataLocations.FileDataLocation;
+import Tree.Nodes.FileNode;
 import javafx.util.Pair;
 
 import java.util.Vector;
@@ -32,17 +36,17 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
         }
         FileDataLocation<Value> newLoc = findLoc(key, rootNodeTemplate);
         if (!thisDataExists(key, newLoc)) // if key not exists
-            insert(newLoc.node, new Pair<>(key, value),
+            insert(newLoc.getNode(), new Pair<>(key, value),
                     null, null);
     }
 
     @Override
     protected void createParentIfRequired(FileNode<Value> oldNodeTemplate, FileNode<Value> newNodeTemplate)
     {
-        if (oldNodeTemplate.parent == null)
+        if (oldNodeTemplate.getParent() == null)
         {
             FileNode<Value> parentNodeTemplate = createNewMiddleNode(null);
-            oldNodeTemplate.parent = parentNodeTemplate.getMyPointer();
+            oldNodeTemplate.setParent(parentNodeTemplate.getMyPointer());
             root = parentNodeTemplate.getMyPointer();
 //            newNode.parent = root;
             depth++;
@@ -52,8 +56,8 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
     @Override
     protected void addVictimToParent(FileNode<Value> startingNode, int victim, FileNode<Value> newNodeTemplate)
     {
-        FileNode<Value> parentNodeTemplate = getNode(startingNode.parent);
-        insert(parentNodeTemplate, startingNode.keyValPair.remove(victim), newNodeTemplate.getMyPointer(),
+        FileNode<Value> parentNodeTemplate = getNode(startingNode.getParent());
+        insert(parentNodeTemplate, startingNode.getKeyValPair().remove(victim), newNodeTemplate.getMyPointer(),
                 startingNode.getMyPointer());
     }
 
@@ -65,7 +69,7 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
         FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
         if(!thisDataExists(key, loc))
             return null;
-        return loc.node.keyValPair.elementAt(loc.offset).getValue();
+        return loc.getNode().getKeyValPair().elementAt(loc.getOffset()).getValue();
 //        return search(key, rootNodeTemplate);
     }
 
@@ -77,7 +81,7 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
         FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
         if(!thisDataExists(key, loc))
             return;
-        updateValue(key, value, loc.node, loc.offset);
+        updateValue(key, value, loc.getNode(), loc.getOffset());
     }
 
     public String toString()

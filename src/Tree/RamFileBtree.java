@@ -1,5 +1,9 @@
 package Tree;
 
+import Primitives.Parsable;
+import Primitives.Sizeofable;
+import Tree.Nodes.DataLocations.RamDataLocation;
+import Tree.Nodes.RamFileNode;
 import javafx.util.Pair;
 
 import java.util.Vector;
@@ -40,13 +44,13 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
             updateOnExtendedFileBtree(key, value, loc);
             return;
         }
-        updateValue(key, value, loc.node, loc.offset);
+        updateValue(key, value, loc.getNode(), loc.getOffset());
     }
 
     private void updateOnExtendedFileBtree(String key, Value value, RamDataLocation<Value> loc)
     {
-        if(loc.node.childAreOnFile)
-            extendedFileBtree.update(key, value, loc.node.fileChild.elementAt(loc.offset));
+        if(loc.getNode().isChildAreOnFile())
+            extendedFileBtree.update(key, value, loc.getNode().getFileChild().elementAt(loc.getOffset()));
     }
 
 
@@ -65,12 +69,12 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         RamDataLocation<Value> newLoc = findLoc(key, rootNodeTemplate);
         if (!thisDataExists(key, newLoc)) // if key not exists
         {
-            if (newLoc.node.childAreOnFile)
-                insert(newLoc.node, new Pair<>(key, value),
+            if (newLoc.getNode().isChildAreOnFile())
+                insert(newLoc.getNode(), new Pair<>(key, value),
                         null, null,
                         null, null);
             else
-                extendedFileBtree.insert(key,value, newLoc.node.fileChild.elementAt(newLoc.offset));
+                extendedFileBtree.insert(key,value, newLoc.getNode().getFileChild().elementAt(newLoc.getOffset()));
             checkMemoryAndFreeIfRequired();
         }
 
@@ -82,15 +86,15 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         {
             extendedFileBtree.invalidateRoots();
             RamFileNode<Value> rootNode = getRootNode();
-            rootNode.childAreOnFile = true;
+            rootNode.setChildAreOnFile(true);
             for(int i = 0; i <= rootNode.getSize(); i++)
             {
-                Long childFileNodePtr = extendedFileBtree.addNewRoot(rootNode.child.elementAt(i), rootNode, i);
-                if(i >= rootNode.fileChild.size())
-                    rootNode.fileChild.add(childFileNodePtr);
+                Long childFileNodePtr = extendedFileBtree.addNewRoot(rootNode.getChild().elementAt(i), rootNode, i);
+                if(i >= rootNode.getFileChild().size())
+                    rootNode.getFileChild().add(childFileNodePtr);
                 else
-                    rootNode.fileChild.set(i, childFileNodePtr);
-                rootNode.child.set(i, null);
+                    rootNode.getFileChild().set(i, childFileNodePtr);
+                rootNode.getChild().set(i, null);
             }
             Runtime.getRuntime().gc();
         }
@@ -112,14 +116,14 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         RamDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
         if(!thisDataExists(key, loc))
             return searchOnExtendedFileBtree(key, loc);
-        return loc.node.keyValPair.elementAt(loc.offset).getValue();
+        return loc.getNode().getKeyValPair().elementAt(loc.getOffset()).getValue();
 //        return search(key, rootNodeTemplate);
     }
 
     private Value searchOnExtendedFileBtree(String key, RamDataLocation<Value> loc)
     {
-        if(loc.node.childAreOnFile)
-            return extendedFileBtree.search(key, loc.node.fileChild.elementAt(loc.offset));
+        if(loc.getNode().isChildAreOnFile())
+            return extendedFileBtree.search(key, loc.getNode().getFileChild().elementAt(loc.getOffset()));
         return null;
     }
 
@@ -135,10 +139,10 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
 
     protected void createParentIfRequired(RamFileNode<Value> oldNodeTemplate, RamFileNode<Value> newNodeTemplate)
     {
-        if (oldNodeTemplate.parent == null)
+        if (oldNodeTemplate.getParent() == null)
         {
             RamFileNode<Value> parentNodeTemplate = createNewMiddleNode(null);
-            oldNodeTemplate.parent = parentNodeTemplate.getMyPointer();
+            oldNodeTemplate.setParent(parentNodeTemplate.getMyPointer());
             root = parentNodeTemplate.getMyPointer();
 //            newNode.parent = root;
             depth++;
@@ -147,8 +151,8 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
 
     protected void addVictimToParent(RamFileNode<Value> startingNode, int victim, RamFileNode<Value> newNodeTemplate)
     {
-        RamFileNode<Value> parentNodeTemplate = getNode(startingNode.parent);
-        insert(parentNodeTemplate, startingNode.keyValPair.remove(victim),
+        RamFileNode<Value> parentNodeTemplate = getNode(startingNode.getParent());
+        insert(parentNodeTemplate, startingNode.getKeyValPair().remove(victim),
                 newNodeTemplate.getMyPointer(), startingNode.getMyPointer(),
                 null, null);
     }
@@ -165,79 +169,79 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
                           RamFileNode<Value> biggerChild, RamFileNode<Value> smallerChild,
                           Long biggerFileChild, Long smallerFileChild)
     {
-//        System.out.println("adding data, pointer: " + startingNode.myPointer + " node size: " + startingNode.getSize());
+//        System.out.println("adding data, pointer: " + startingNode.myPointer + " getNode() size: " + startingNode.getSize());
         if (startingNode.getSize() == 0)
         {
-            startingNode.keyValPair.add(newData);
-            startingNode.child.add(smallerChild);
-            startingNode.fileChild.add(smallerFileChild);
+            startingNode.getKeyValPair().add(newData);
+            startingNode.getChild().add(smallerChild);
+            startingNode.getFileChild().add(smallerFileChild);
             if (smallerChild != null)
             {
                 RamFileNode<Value> smallerChildNodeTemplate = getNode(smallerChild);
-                smallerChildNodeTemplate.parent = startingNode.getMyPointer();
+                smallerChildNodeTemplate.setParent(startingNode.getMyPointer());
             }
             if (smallerFileChild != null)
                 extendedFileBtree.updateParent(smallerFileChild, startingNode.getMyPointer());
 
-            startingNode.child.add(biggerChild);
-            startingNode.fileChild.add(biggerFileChild);
+            startingNode.getChild().add(biggerChild);
+            startingNode.getFileChild().add(biggerFileChild);
             if (biggerChild != null)
             {
                 RamFileNode<Value> biggerChildNodeTemplate = getNode(biggerChild);
-                biggerChildNodeTemplate.parent = startingNode.getMyPointer();
+                biggerChildNodeTemplate.setParent(startingNode.getMyPointer());
             }
             if (biggerFileChild != null)
                 extendedFileBtree.updateParent(biggerFileChild, startingNode.getMyPointer());
         } else
         {
             int location = startingNode.binarySearchForLocationToAdd(newData.getKey());
-            if (location == startingNode.keyValPair.size())
+            if (location == startingNode.getKeyValPair().size())
             {
-                startingNode.keyValPair.add(newData);
-                startingNode.child.add(biggerChild);
-                startingNode.fileChild.add(biggerFileChild);
+                startingNode.getKeyValPair().add(newData);
+                startingNode.getChild().add(biggerChild);
+                startingNode.getFileChild().add(biggerFileChild);
             } else
             {
-                startingNode.keyValPair.insertElementAt(newData, location);
-                startingNode.child.insertElementAt(biggerChild, location + 1);
-                startingNode.fileChild.insertElementAt(biggerFileChild, location + 1);
+                startingNode.getKeyValPair().insertElementAt(newData, location);
+                startingNode.getChild().insertElementAt(biggerChild, location + 1);
+                startingNode.getFileChild().insertElementAt(biggerFileChild, location + 1);
             }
             if (biggerChild != null)
             {
                 RamFileNode<Value> biggerChildNodeTemplate = getNode(biggerChild);
-                biggerChildNodeTemplate.parent = startingNode.getMyPointer();
+                biggerChildNodeTemplate.setParent(startingNode.getMyPointer());
             }
             if (biggerFileChild != null)
                 extendedFileBtree.updateParent(biggerFileChild, startingNode.getMyPointer());
             if (smallerChild != null)
             {
-                startingNode.child.set(location, smallerChild);
+                startingNode.getChild().set(location, smallerChild);
                 RamFileNode<Value> smallerChildNodeTemplate = getNode(smallerChild);
-                smallerChildNodeTemplate.parent = startingNode.getMyPointer();
+                smallerChildNodeTemplate.setParent(startingNode.getMyPointer());
             }
             if (smallerFileChild != null)
             {
-                startingNode.fileChild.set(location, smallerFileChild);
+                startingNode.getFileChild().set(location, smallerFileChild);
                 extendedFileBtree.updateParent(smallerFileChild, startingNode.getMyPointer());
             }
             if (startingNode.getSize() > MAX_SIZE)
                 splitCurrentNode(startingNode);
         }
-//        System.out.println("data added, pointer: " + startingNode.myPointer + " node size: " + startingNode.getSize());
+//        System.out.println("data added, pointer: " + startingNode.myPointer + " getNode() size: " + startingNode.getSize());
     }
 
     public void insertFromFileNodes(RamFileNode<Value> node, Pair<String, Value> newData, Long smallerChildPointer, Long biggerChildPointer)
     {
 
         int location = node.binarySearchForLocationToAdd(newData.getKey());
-        if (location == node.keyValPair.size())
+        if (location == node.getKeyValPair().size())
         {
-            node.keyValPair.add(newData);
-            node.fileChild.add(biggerChildPointer);
+            node.getKeyValPair().add(newData);
+            node.getFileChild().add(biggerChildPointer);
         } else
         {
-            node.keyValPair.insertElementAt(newData, location);
-            node.fileChild.insertElementAt(biggerChildPointer, location + 1);
+            node.getKeyValPair().insertElementAt(newData, location);
+            node.getFileChild().insertElementAt(biggerChildPointer, location + 1);
         }
         if (biggerChildPointer != null)
         {
@@ -245,7 +249,7 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         }
         if (smallerChildPointer != null)
         {
-            node.fileChild.set(location, smallerChildPointer);
+            node.getFileChild().set(location, smallerChildPointer);
             extendedFileBtree.updateParent(smallerChildPointer, node);
         }
         if (node.getSize() > MAX_SIZE)
@@ -254,13 +258,13 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
 
     protected Value returnValue(String key, RamFileNode<Value> startingNodeTemplate, int i1)
     {
-        return startingNodeTemplate.keyValPair.elementAt(i1).getValue();
+        return startingNodeTemplate.getKeyValPair().elementAt(i1).getValue();
     }
 
     protected void updateValue(String key, Value value, RamFileNode<Value> startingNodeTemplate, int i1)
     {
-        Pair<String, Value> oldKeyValuePair = startingNodeTemplate.keyValPair.elementAt(i1);
-        startingNodeTemplate.keyValPair.set(i1, new Pair<>(oldKeyValuePair.getKey(), value));
+        Pair<String, Value> oldKeyValuePair = startingNodeTemplate.getKeyValPair().elementAt(i1);
+        startingNodeTemplate.getKeyValPair().set(i1, new Pair<>(oldKeyValuePair.getKey(), value));
     }
 
     protected RamFileNode<Value> createNewMiddleNode(RamFileNode<Value> parent)
@@ -277,14 +281,14 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
 
     protected boolean thisDataExists(String key, RamDataLocation<Value> newLoc)
     {
-        if(newLoc.offset == newLoc.node.getSize() || key.compareTo(((Pair<String, Value>) newLoc.node.keyValPair.elementAt(newLoc.offset)).getKey()) != 0)
+        if(newLoc.getOffset() == newLoc.getNode().getSize() || key.compareTo(((Pair<String, Value>) newLoc.getNode().getKeyValPair().elementAt(newLoc.getOffset())).getKey()) != 0)
             return false;
         return true;
     }
 
     protected RamFileNode<Value>[] splitCurrentNode(RamFileNode<Value> startingNode)
     {
-        RamFileNode<Value> newNodeTemplate = createNewLeafNode(startingNode.parent);
+        RamFileNode<Value> newNodeTemplate = createNewLeafNode(startingNode.getParent());
         int victim = HALF_MAX_SIZE;
         int offset = victim + 1;
         moveDataToSiblingAndCreateParentIfRequired(startingNode, newNodeTemplate, offset);
@@ -296,20 +300,20 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
     {
         for (int i = offset; i <= MAX_SIZE; i++)
         {
-            if (oldNodeTemplate.getSize() - 1 < offset || oldNodeTemplate.child.size() - 1 < offset)
+            if (oldNodeTemplate.getSize() - 1 < offset || oldNodeTemplate.getChild().size() - 1 < offset)
                 System.out.println("" +
                         "ohhhh nooo");
-            if (i == offset) // first node
+            if (i == offset) // first getNode()
             {
-                RamFileNode<Value> smallerChild = oldNodeTemplate.child.remove(offset), biggerChild = oldNodeTemplate.child.remove(offset);
-                Long smallerFileChild = oldNodeTemplate.fileChild.remove(offset), biggerFileChild = oldNodeTemplate.fileChild.remove(offset);
-                insert(newNodeTemplate, oldNodeTemplate.keyValPair.remove(offset),
+                RamFileNode<Value> smallerChild = oldNodeTemplate.getChild().remove(offset), biggerChild = oldNodeTemplate.getChild().remove(offset);
+                Long smallerFileChild = oldNodeTemplate.getFileChild().remove(offset), biggerFileChild = oldNodeTemplate.getFileChild().remove(offset);
+                insert(newNodeTemplate, oldNodeTemplate.getKeyValPair().remove(offset),
                         biggerChild, smallerChild,
                         biggerFileChild, smallerFileChild);
             } else
-                insert(newNodeTemplate, oldNodeTemplate.keyValPair.remove(offset),
-                        oldNodeTemplate.child.remove(offset), null,
-                        oldNodeTemplate.fileChild.remove(offset), null);
+                insert(newNodeTemplate, oldNodeTemplate.getKeyValPair().remove(offset),
+                        oldNodeTemplate.getChild().remove(offset), null,
+                        oldNodeTemplate.getFileChild().remove(offset), null);
         }
         createParentIfRequired(oldNodeTemplate, newNodeTemplate);
     }
@@ -320,11 +324,11 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         RamFileNode<Value> nextChild;
         int i1 = startingNodeTemplate.binarySearchForLocationToAdd(key);
         if (i1 == startingNodeTemplate.getSize())
-            nextChild = startingNodeTemplate.child.elementAt(i1);
-        else if (startingNodeTemplate.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
+            nextChild = startingNodeTemplate.getChild().elementAt(i1);
+        else if (startingNodeTemplate.getKeyValPair().elementAt(i1).getKey().compareTo(key) == 0)
             return new RamDataLocation<Value>(startingNodeTemplate, i1);
         else
-            nextChild = startingNodeTemplate.child.elementAt(i1);
+            nextChild = startingNodeTemplate.getChild().elementAt(i1);
         return (nextChild == null ? new RamDataLocation<Value>(startingNodeTemplate, i1) : findLoc(key, getNode(nextChild)));
     }
 
@@ -342,9 +346,9 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
             }
             return "\n" + toString(nodeTemplateQ, stringDepth);
         }
-        for (int i = 0; i < currentNodeTemplate.child.size(); i++)
+        for (int i = 0; i < currentNodeTemplate.getChild().size(); i++)
         {
-            RamFileNode<Value> childNode = currentNodeTemplate.child.elementAt(i);
+            RamFileNode<Value> childNode = currentNodeTemplate.getChild().elementAt(i);
             if (childNode != null) nodeTemplateQ.add(getNode(childNode));
         }
         return currentNodeTemplate.toString() + "\t" + toString(nodeTemplateQ, stringDepth);
