@@ -10,12 +10,11 @@ import java.util.Vector;
 
 public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 {
-    protected final int KEY_MAX_SIZE;
-    protected final int VALUE_MAX_SIZE;
+    protected final int KEY_MAX_SIZE, VALUE_MAX_SIZE;
     protected final int HALF_MAX_SIZE, MAX_SIZE;
     protected final Class valueClassType;
     protected int depth;
-    protected HashMap<Long, NodeTemplate> nodeCache;
+    protected HashMap<Long, FileNode <Value>> nodeCache;
 
     public FileBtreeTemplate(int keyMaxSize, int valueMaxSize, int halfMaxSize, Class valueClassType)
     {
@@ -32,10 +31,10 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
     public abstract Value search(String key);
     public abstract void insert(String key, Value value) throws Exception;
     public abstract void update(String key, Value value);
-    protected abstract void createParentIfRequired(NodeTemplate oldNodeTemplate, NodeTemplate newNodeTemplate);
-    protected abstract void addVictimToParent(NodeTemplate startingNode, int victim, NodeTemplate newNodeTemplate);
+    protected abstract void createParentIfRequired(FileNode <Value> oldNodeTemplate, FileNode <Value> newNodeTemplate);
+    protected abstract void addVictimToParent(FileNode <Value> startingNode, int victim, FileNode <Value> newNodeTemplate);
 
-    protected void insert(NodeTemplate startingNode, Pair<String, Value> newData, Long biggerChild, Long smallerChild)
+    protected void insert(FileNode <Value> startingNode, Pair<String, Value> newData, Long biggerChild, Long smallerChild)
     {
 //        System.out.println("adding data, pointer: " + startingNode.myPointer + " node size: " + startingNode.getSize());
         if (startingNode.getSize() == 0)
@@ -44,14 +43,14 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
             startingNode.child.add(smallerChild);
             if (smallerChild != null)
             {
-                NodeTemplate smallerChildNodeTemplate = getNode(smallerChild);
+                FileNode <Value> smallerChildNodeTemplate = getNode(smallerChild);
                 smallerChildNodeTemplate.parent = startingNode.getMyPointer();
                 smallerChildNodeTemplate.commitChanges();
             }
             startingNode.child.add(biggerChild);
             if (biggerChild != null)
             {
-                NodeTemplate biggerChildNodeTemplate = getNode(biggerChild);
+                FileNode <Value> biggerChildNodeTemplate = getNode(biggerChild);
                 biggerChildNodeTemplate.parent = startingNode.getMyPointer();
                 biggerChildNodeTemplate.commitChanges();
             }
@@ -69,14 +68,14 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
             }
             if (biggerChild != null)
             {
-                NodeTemplate biggerChildNodeTemplate = getNode(biggerChild);
+                FileNode <Value> biggerChildNodeTemplate = getNode(biggerChild);
                 biggerChildNodeTemplate.parent = startingNode.getMyPointer();
                 biggerChildNodeTemplate.commitChanges();
             }
             if (smallerChild != null)
             {
                 startingNode.child.set(location, smallerChild);
-                NodeTemplate smallerChildNodeTemplate = getNode(smallerChild);
+                FileNode <Value> smallerChildNodeTemplate = getNode(smallerChild);
                 smallerChildNodeTemplate.parent = startingNode.getMyPointer();
                 smallerChildNodeTemplate.commitChanges();
             }
@@ -87,12 +86,12 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         startingNode.commitChanges();
     }
 
-    public NodeTemplate getNode(Long obj)
+    public FileNode <Value> getNode(Long obj)
     {
-        NodeTemplate cacheResult = nodeCache.get(obj);
+        FileNode <Value> cacheResult = nodeCache.get(obj);
         if(cacheResult == null)
         {
-            NodeTemplate resultNode = new NodeTemplate(HALF_MAX_SIZE, null);
+            FileNode <Value> resultNode = new FileNode <Value>(KEY_MAX_SIZE, VALUE_MAX_SIZE, HALF_MAX_SIZE, null, valueClassType);
             resultNode.fetchNodeFromHard(obj);
             nodeCache.put(obj, resultNode);
         }
@@ -100,42 +99,42 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
     }
 
 
-    protected Value returnValue(String key, NodeTemplate startingNodeTemplate, int i1)
+    protected Value returnValue(String key, FileNode <Value> startingNodeTemplate, int i1)
     {
         return startingNodeTemplate.keyValPair.elementAt(i1).getValue();
     }
 
-    protected void updateValue(String key, Value value, NodeTemplate startingNodeTemplate, int i1)
+    protected void updateValue(String key, Value value, FileNode <Value> startingNodeTemplate, int i1)
     {
         Pair<String, Value> oldKeyValuePair = startingNodeTemplate.keyValPair.elementAt(i1);
         startingNodeTemplate.keyValPair.set(i1, new Pair<>(oldKeyValuePair.getKey(), value));
         startingNodeTemplate.commitChanges();
     }
 
-    protected NodeTemplate createNewMiddleNode(Long parent)
+    protected FileNode <Value> createNewMiddleNode(Long parent)
     {
-        NodeTemplate resultNode = new NodeTemplate(HALF_MAX_SIZE, parent);
+        FileNode <Value> resultNode = new FileNode <Value>(KEY_MAX_SIZE, VALUE_MAX_SIZE, HALF_MAX_SIZE, parent, valueClassType);
         resultNode.fetchNodeFromHard(null);
         nodeCache.put(resultNode.getMyPointer(), resultNode);
         return resultNode;
     }
 
-    protected NodeTemplate createNewLeafNode(Long parent)
+    protected FileNode <Value> createNewLeafNode(Long parent)
     {
         return createNewMiddleNode(parent);
     }
 
 
-    protected boolean thisDataExists(String key, FileDataLocation newLoc)
+    protected boolean thisDataExists(String key, FileDataLocation<Value> newLoc)
     {
-        if(newLoc.offset == newLoc. node.getSize() || key.compareTo(newLoc.node.keyValPair.elementAt(newLoc.offset).getKey()) != 0)
+        if(newLoc.offset == newLoc.node.getSize() || key.compareTo(newLoc.node.keyValPair.elementAt(newLoc.offset).getKey()) != 0)
             return false;
         return true;
     }
 
-    protected NodeTemplate[] splitCurrentNode(NodeTemplate startingNode)
+    protected FileNode <Value>[] splitCurrentNode(FileNode <Value> startingNode)
     {
-        NodeTemplate newNodeTemplate = createNewLeafNode(startingNode.parent);
+        FileNode <Value> newNodeTemplate = createNewLeafNode(startingNode.parent);
         int victim = HALF_MAX_SIZE;
         int offset = victim + 1;
         moveDataToSiblingAndCreateParentIfRequired(startingNode, newNodeTemplate, offset);
@@ -144,7 +143,7 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         return null;
     }
 
-    protected void moveDataToSiblingAndCreateParentIfRequired(NodeTemplate oldNodeTemplate, NodeTemplate newNodeTemplate, int offset)
+    protected void moveDataToSiblingAndCreateParentIfRequired(FileNode <Value> oldNodeTemplate, FileNode <Value> newNodeTemplate, int offset)
     {
         for (int i = offset; i <= MAX_SIZE; i++)
         {
@@ -162,21 +161,21 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         createParentIfRequired(oldNodeTemplate, newNodeTemplate);
     }
 
-    protected FileDataLocation findLoc(String key, NodeTemplate startingNodeTemplate)
+    protected FileDataLocation<Value> findLoc(String key, FileNode <Value> startingNodeTemplate)
     {
-        if(startingNodeTemplate.getSize() == 0) return new FileDataLocation(startingNodeTemplate, 0);
+        if(startingNodeTemplate.getSize() == 0) return new FileDataLocation<Value>(startingNodeTemplate, 0);
         Long nextChild;
         int i1 = startingNodeTemplate.binarySearchForLocationToAdd(key);
         if (i1 == startingNodeTemplate.getSize())
             nextChild = startingNodeTemplate.child.elementAt(i1);
         else if (startingNodeTemplate.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
-            return new FileDataLocation(startingNodeTemplate, i1);
+            return new FileDataLocation<Value>(startingNodeTemplate, i1);
         else
             nextChild = startingNodeTemplate.child.elementAt(i1);
-        return (nextChild == null ? new FileDataLocation(startingNodeTemplate, i1) : findLoc(key, getNode(nextChild)));
+        return (nextChild == null ? new FileDataLocation<Value>(startingNodeTemplate, i1) : findLoc(key, getNode(nextChild)));
     }
 
-//    protected Value search(String key, NodeTemplate startingNodeTemplate)
+//    protected Value search(String key, FileNode <Value> startingNodeTemplate)
 //    {
 //        if (startingNodeTemplate == null)
 //            return null;
@@ -195,9 +194,9 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 //    }
 
 
-//    protected void update(String key, Value value, NodeTemplate startingNodeTemplate)
+//    protected void update(String key, Value value, FileNode <Value> startingNodeTemplate)
 //    {
-//        NodeTemplate nextChild;
+//        FileNode <Value> nextChild;
 //        int i1 = startingNodeTemplate.binarySearchForLocationToAdd(key);
 //        if (i1 == startingNodeTemplate.getSize())
 //            nextChild = startingNodeTemplate.child.elementAt(i1);
@@ -210,11 +209,11 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
 //        update(key, value, nextChild);
 //    }
 
-    protected String toString(Vector<NodeTemplate> nodeTemplateQ, int stringDepth)
+    protected String toString(Vector<FileNode <Value>> nodeTemplateQ, int stringDepth)
     {
         if (nodeTemplateQ.size() == 0)
             return "";
-        NodeTemplate currentNodeTemplate = nodeTemplateQ.remove(0);
+        FileNode <Value> currentNodeTemplate = nodeTemplateQ.remove(0);
         if (currentNodeTemplate == null)
         {
             if (stringDepth < this.depth)
@@ -231,193 +230,4 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         }
         return currentNodeTemplate.toString() + "\t" + toString(nodeTemplateQ, stringDepth);
     }
-
-    class FileDataLocation extends DataLocation<NodeTemplate>
-    {
-        public FileDataLocation(NodeTemplate node, int offset)
-        {
-            super(node, offset);
-        }
-    }
-
-    public class NodeTemplate
-    {
-        protected Vector<Pair<String, Value>> keyValPair;
-        protected Vector<Long> child;
-        protected Long parent, myPointer;
-        protected int id;
-
-        public NodeTemplate(int halfMaxSize, Long parent)
-        {
-            this.parent = parent;
-//        this.id = ++idCounter;
-            this.id = 0;
-            keyValPair = new Vector<>();
-            child = new Vector<>();
-        }
-
-        protected Long getMyPointer()
-        {
-            return myPointer;
-        }
-
-
-        public int getSize()
-        {
-            return keyValPair.size();
-        }
-
-
-        public String toString()
-        {
-//        NodeTemplate parentNodeTemplate = getNode(parent);
-//        String result = "<<id:" + id + ",ref:" + (parentNodeTemplate == null ? -1 : parentNodeTemplate.id) + ">>";
-            String result = "";
-            for (Pair<String, Value> pair : keyValPair)
-                result += "**" + pair.getKey().toString();
-            result += "**";
-            return result;
-        }
-
-        protected int binarySearchForLocationToAdd(String key)
-        {
-
-            return getSize() == 0 ? 0 :
-                    binarySearchForLocationToAdd(key, 0, getSize() - 1);
-        }
-
-        protected int binarySearchForLocationToAdd(String key, int from, int to)
-        {
-            if (from > to)
-                return -1;
-            int mid = (from + to) / 2;
-            int compareResult = key.compareTo(keyValPair.elementAt(mid).getKey());
-            if (compareResult < 0)
-            {
-                int returnValue = binarySearchForLocationToAdd(key, from, mid - 1);
-                return (returnValue == -1 ? from : returnValue);
-            } else if (compareResult == 0)
-                return mid;
-            else
-            {
-                int returnValue = binarySearchForLocationToAdd(key, mid + 1, to);
-                return (returnValue == -1 ? to + 1 : returnValue);
-            }
-        }
-
-
-        protected int binarySearchForExistence(String key)
-        {
-            return binarySearchForExistence(key, 0, getSize() - 1);
-        }
-
-
-        protected int binarySearchForExistence(String key, int from, int to)
-        {
-            if (from > to)
-                return -1;
-            int mid = (from + to) / 2;
-            int compareResult = key.compareTo(keyValPair.elementAt(mid).getKey());
-            if (compareResult == 0)
-                return mid;
-            if (compareResult < 0)
-                return binarySearchForExistence(key, from, mid - 1);
-            else
-                return binarySearchForExistence(key, mid + 1, to);
-        }
-
-
-        protected void fetchNodeFromHard(Long myPointer)
-        {
-            RandomAccessFile instance = RandomAccessFileManagement.getMyInstance();
-            if (myPointer == null)
-                try
-                {
-                    instance.seek(instance.getChannel().size());
-                    this.myPointer = instance.getFilePointer();
-//                    System.out.println("creating new node; pointer: " + this.myPointer);
-                    commitChanges();
-                    return;
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-
-
-            try
-            {
-//                System.out.println("fetching from hard, pointer: " + myPointer);
-                this.myPointer = myPointer;
-                instance.seek(myPointer);
-                parent = instance.readLong();
-                if(parent == -1)
-                    parent = null;
-                int size = instance.readInt();
-                for (int i = 0; i < size; i++)
-                {
-                    byte tempByteArray[] = new byte[KEY_MAX_SIZE];
-                    instance.read(tempByteArray, 0, KEY_MAX_SIZE);
-                    String key = new String(tempByteArray);
-
-                    tempByteArray = new byte[VALUE_MAX_SIZE];
-                    instance.read(tempByteArray);
-                    Value value = (Value) valueClassType.newInstance();
-                    value.parsefromByteArray(tempByteArray);
-
-                    keyValPair.add(new Pair<String, Value>(key, value));
-                }
-                for (int i = 0; i <= size; i++)
-                    child.add(instance.readLong());
-            } catch (IOException | InstantiationException | IllegalAccessException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        protected void commitChanges()
-        {
-//            System.out.println("committing, pointer: " + myPointer);
-            RandomAccessFile instance = RandomAccessFileManagement.getMyInstance();
-            try
-            {
-                instance.seek(myPointer);
-                instance.writeLong(parent == null ? -1 : parent);
-                instance.writeInt(keyValPair.size());
-                for (int i = 0; i < MAX_SIZE; i++)
-                {
-                    if(i < keyValPair.size())
-                    {
-                        Pair<String, Value> tempKeyVal = keyValPair.elementAt(i);
-                        instance.writeBytes(tempKeyVal.getKey());
-                        byte tempByteArray[] = tempKeyVal.getValue().toByteArray();
-                        int emptyBytes = VALUE_MAX_SIZE - tempByteArray.length;
-                        instance.write(tempByteArray);
-                        instance.write(new byte[emptyBytes]);
-                    }
-                    else
-                    {
-                        instance.writeBytes(new String(new byte[KEY_MAX_SIZE], "UTF-8"));
-                        int emptyBytes = VALUE_MAX_SIZE;
-                        instance.write(new byte[emptyBytes]);
-                    }
-                }
-                for (int i = 0; i <= MAX_SIZE; i++)
-                {
-                    if(i < child.size())
-                    {
-                        Long tempChild = child.elementAt(i);
-                        long childPointer = (tempChild == null ? -1 : tempChild);
-                        instance.writeLong(childPointer);
-                    }
-                    else
-                        instance.writeLong((long) -1);
-                }
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
 }

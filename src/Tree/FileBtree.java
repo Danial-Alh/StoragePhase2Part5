@@ -14,7 +14,7 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
         this.root = createNewLeafNode(null).getMyPointer();
     }
 
-    protected NodeTemplate getRootNode()
+    protected FileNode<Value> getRootNode()
     {
         return getNode(root);
     }
@@ -23,25 +23,25 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
     {
         if(key.getBytes().length > KEY_MAX_SIZE || value.sizeof() > VALUE_MAX_SIZE)
             throw new Exception("length exceeded");
-        NodeTemplate rootNodeTemplate = getRootNode();
+        FileNode<Value> rootNodeTemplate = getRootNode();
         if (rootNodeTemplate.getSize() == 0)
         {
             insert(rootNodeTemplate, new Pair<>(key, value),
                     null, null);
             return;
         }
-        FileDataLocation newLoc = findLoc(key, rootNodeTemplate);
+        FileDataLocation<Value> newLoc = findLoc(key, rootNodeTemplate);
         if (!thisDataExists(key, newLoc)) // if key not exists
             insert(newLoc.node, new Pair<>(key, value),
                     null, null);
     }
 
     @Override
-    protected void createParentIfRequired(NodeTemplate oldNodeTemplate, NodeTemplate newNodeTemplate)
+    protected void createParentIfRequired(FileNode<Value> oldNodeTemplate, FileNode<Value> newNodeTemplate)
     {
         if (oldNodeTemplate.parent == null)
         {
-            NodeTemplate parentNodeTemplate = createNewMiddleNode(null);
+            FileNode<Value> parentNodeTemplate = createNewMiddleNode(null);
             oldNodeTemplate.parent = parentNodeTemplate.getMyPointer();
             root = parentNodeTemplate.getMyPointer();
 //            newNode.parent = root;
@@ -50,19 +50,19 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
     }
 
     @Override
-    protected void addVictimToParent(NodeTemplate startingNode, int victim, NodeTemplate newNodeTemplate)
+    protected void addVictimToParent(FileNode<Value> startingNode, int victim, FileNode<Value> newNodeTemplate)
     {
-        NodeTemplate parentNodeTemplate = getNode(startingNode.parent);
+        FileNode<Value> parentNodeTemplate = getNode(startingNode.parent);
         insert(parentNodeTemplate, startingNode.keyValPair.remove(victim), newNodeTemplate.getMyPointer(),
                 startingNode.getMyPointer());
     }
 
     public Value search(String key)
     {
-        NodeTemplate rootNodeTemplate = getRootNode();
+        FileNode<Value> rootNodeTemplate = getRootNode();
         if (rootNodeTemplate.getSize() == 0)
             return null;
-        FileDataLocation loc = findLoc(key, rootNodeTemplate);
+        FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
         if(!thisDataExists(key, loc))
             return null;
         return loc.node.keyValPair.elementAt(loc.offset).getValue();
@@ -71,10 +71,10 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
 
     public void update(String key, Value value)
     {
-        NodeTemplate rootNodeTemplate = getRootNode();
+        FileNode<Value> rootNodeTemplate = getRootNode();
         if (rootNodeTemplate.getSize() == 0)
             return;
-        FileDataLocation loc = findLoc(key, rootNodeTemplate);
+        FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
         if(!thisDataExists(key, loc))
             return;
         updateValue(key, value, loc.node, loc.offset);
@@ -82,7 +82,7 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
 
     public String toString()
     {
-        Vector<NodeTemplate> nodeTemplateQ = new Vector<>();
+        Vector<FileNode<Value>> nodeTemplateQ = new Vector<>();
         nodeTemplateQ.add(getRootNode());
         nodeTemplateQ.add(null);
         return toString(nodeTemplateQ, 1);
