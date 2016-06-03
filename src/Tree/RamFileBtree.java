@@ -34,8 +34,17 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
             return;
         RamDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
         if(!thisDataExists(key, loc))
+        {
+            updateOnExtendedFileBtree(key, value, loc);
             return;
+        }
         updateValue(key, value, loc.node, loc.offset);
+    }
+
+    private void updateOnExtendedFileBtree(String key, Value value, RamDataLocation<Value> loc)
+    {
+        if(loc.node.childAreOnFile)
+            extendedFileBtree.update(key, value, loc.node.fileChild.elementAt(loc.offset));
     }
 
 
@@ -52,8 +61,14 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         }
         RamDataLocation<Value> newLoc = findLoc(key, rootNodeTemplate);
         if (!thisDataExists(key, newLoc)) // if key not exists
-            insert(newLoc.node, new Pair<>(key, value),
-                    null, null);
+        {
+            if (newLoc.node.childAreOnFile)
+                insert(newLoc.node, new Pair<>(key, value),
+                        null, null);
+            else
+                extendedFileBtree.insert(key,value, newLoc.node.fileChild.elementAt(newLoc.offset));
+        }
+
     }
 
     public Value search(String key)
