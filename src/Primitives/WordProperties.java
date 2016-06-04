@@ -8,6 +8,7 @@ import java.math.BigInteger;
 public class WordProperties implements Sizeofable, Parsable
 {
     int occurrences;
+    int temp[];
 
     public int getOccurrences()
     {
@@ -22,6 +23,7 @@ public class WordProperties implements Sizeofable, Parsable
     public WordProperties(int occurrences)
     {
         this.occurrences = occurrences;
+//        temp = new int[1000];
     }
 
     @Override

@@ -92,9 +92,10 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
         FileNode <Value> cacheResult = nodeCache.get(obj);
         if(cacheResult == null)
         {
-            FileNode <Value> resultNode = new FileNode <Value>(KEY_MAX_SIZE, VALUE_MAX_SIZE, HALF_MAX_SIZE, null, valueClassType);
+            FileNode <Value> resultNode = new FileNode<>(KEY_MAX_SIZE, VALUE_MAX_SIZE, HALF_MAX_SIZE, null, valueClassType);
             resultNode.fetchNodeFromHard(obj);
             nodeCache.put(obj, resultNode);
+            cacheResult = resultNode;
         }
         return cacheResult;
     }

@@ -79,6 +79,7 @@ public class RamFileNode <Value extends Sizeofable & Parsable>
         this.id = /*++idCounter*/0;
         keyValPair = new Vector<>();
         child = new Vector<>();
+        fileChild = new Vector<>();
     }
 
     public int getSize()

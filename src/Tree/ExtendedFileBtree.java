@@ -100,8 +100,10 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
                     new RootInfo(biggerChild.getMyPointer(), new RamDataLocation<>(oldNodeRootInfo.locationDetailsInParent.getNode(),
                             oldNodeRootInfo.locationDetailsInParent.getOffset() + 1))
             );
-            ramFileBtree.insertFromFileNodes(roots.get(smallerChild.getMyPointer()).locationDetailsInParent.getNode(),
-                    smallerChild.getKeyValPair().remove(victim), smallerChild.getMyPointer(), biggerChild.getMyPointer());
+            ramFileBtree.insert(roots.get(smallerChild.getMyPointer()).locationDetailsInParent.getNode(),
+                    smallerChild.getKeyValPair().remove(victim),
+                    null, null,
+                    smallerChild.getMyPointer(), biggerChild.getMyPointer());
         }
         else
         {
@@ -115,7 +117,10 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
     {
         FileNode<Value> newFileNode = createNewMiddleNode(parent);
 
+        if(newFileNode == null ||  newRamNode == null)
+            System.out.println("ohohohohoh");
         newFileNode.setKeyValPair(newRamNode.getKeyValPair());
+        newRamNode.setKeyValPair(null);
         if(newRamNode.isChildAreOnFile())
             newFileNode.setChild(newRamNode.getFileChild());
         else
@@ -126,12 +131,19 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
                 if(tempChild == null)
                     newFileNode.getChild().add(null);
                 else
+                {
                     newFileNode.getChild().add(
                             convertRamNodeToFileNode(tempChild, newFileNode.getMyPointer()).getMyPointer()
                     );
+                    newRamNode.getChild().setElementAt(null, i);
+                }
+
             }
 
         }
+        newRamNode.setFileChild(null);
+        newRamNode.setChild(null);
+        newRamNode.setParent(null);
         return newFileNode;
     }
 
@@ -151,7 +163,12 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
         updateValue(key, value, loc.getNode(), loc.getOffset());
     }
 
-    public class RootInfo
+    public void invalidateCache()
+    {
+        nodeCache.clear();
+    }
+
+    class RootInfo
     {
         private Long rootPointer;
         private RamDataLocation<Value> locationDetailsInParent;
