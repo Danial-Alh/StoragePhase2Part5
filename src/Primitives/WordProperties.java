@@ -1,14 +1,17 @@
 package Primitives;
 
-import Primitives.Parsable;
-import Primitives.Sizeofable;
-
 import java.math.BigInteger;
 
 public class WordProperties implements Sizeofable, Parsable
 {
     int occurrences;
     int temp[];
+
+    public WordProperties(int occurrences)
+    {
+        this.occurrences = occurrences;
+//        temp = new int[1000];
+    }
 
     public int getOccurrences()
     {
@@ -18,12 +21,6 @@ public class WordProperties implements Sizeofable, Parsable
     public void setOccurrences(int occurrences)
     {
         this.occurrences = occurrences;
-    }
-
-    public WordProperties(int occurrences)
-    {
-        this.occurrences = occurrences;
-//        temp = new int[1000];
     }
 
     @Override

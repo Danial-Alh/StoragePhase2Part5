@@ -9,9 +9,27 @@ import java.util.Vector;
 /**
  * Created by danial on 6/2/16.
  */
-public class RamFileNode <Value extends Sizeofable & Parsable>
+public class RamFileNode<Value extends Sizeofable & Parsable>
 {
+    //        protected final int HALF_MAX_SIZE, MAX_SIZE;
+    protected Vector<Pair<String, Value>> keyValPair;
+    protected Vector<RamFileNode> child;
+    protected Vector<Long> fileChild;
+    protected RamFileNode parent;
+    protected int id;
     boolean childAreOnFile;
+
+    public RamFileNode(int halfMaxSize, RamFileNode parent)
+    {
+        childAreOnFile = false;
+//            this.HALF_MAX_SIZE = halfMaxSize;
+//            this.MAX_SIZE = 2 * halfMaxSize - 1;
+        this.parent = parent;
+        this.id = /*++idCounter*/0;
+        keyValPair = new Vector<>();
+        child = new Vector<>();
+        fileChild = new Vector<>();
+    }
 
     public boolean isChildAreOnFile()
     {
@@ -61,25 +79,6 @@ public class RamFileNode <Value extends Sizeofable & Parsable>
     public void setParent(RamFileNode parent)
     {
         this.parent = parent;
-    }
-
-    //        protected final int HALF_MAX_SIZE, MAX_SIZE;
-    protected Vector<Pair<String, Value>> keyValPair;
-    protected Vector<RamFileNode> child;
-    protected Vector<Long> fileChild;
-    protected RamFileNode parent;
-    protected int id;
-
-    public RamFileNode(int halfMaxSize, RamFileNode parent)
-    {
-        childAreOnFile = false;
-//            this.HALF_MAX_SIZE = halfMaxSize;
-//            this.MAX_SIZE = 2 * halfMaxSize - 1;
-        this.parent = parent;
-        this.id = /*++idCounter*/0;
-        keyValPair = new Vector<>();
-        child = new Vector<>();
-        fileChild = new Vector<>();
     }
 
     public int getSize()

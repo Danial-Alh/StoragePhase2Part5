@@ -3,12 +3,14 @@ package Tree;
 import Primitives.Parsable;
 import Primitives.Sizeofable;
 import Tree.Nodes.DataLocations.FileDataLocation;
-import Tree.Nodes.FileNode;
 import Tree.Nodes.DataLocations.RamDataLocation;
+import Tree.Nodes.FileNode;
 import Tree.Nodes.RamFileNode;
 import javafx.util.Pair;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Vector;
 
 public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTemplate<Value>
 {
@@ -34,7 +36,7 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
         if (rootNodeTemplate.getSize() == 0)
             return null;
         FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
-        if(!thisDataExists(key, loc))
+        if (!thisDataExists(key, loc))
             return null;
         return loc.getNode().getKeyValPair().elementAt(loc.getOffset()).getValue();
     }
@@ -77,6 +79,7 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
                               int newRamPointerLocInParent)
     {
         FileNode<Value> newFileNode = convertRamNodeToFileNode(newRamRoot, null);
+        newFileNode.commitChanges();
         roots.put(newFileNode.getMyPointer(),
                 new RootInfo(newFileNode.getMyPointer(), new RamDataLocation<Value>(ramParent, newRamPointerLocInParent)));
         return newFileNode.getMyPointer();
@@ -91,21 +94,22 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
     @Override
     protected void addVictimToParent(FileNode<Value> smallerChild, int victim, FileNode<Value> biggerChild)
     {
-        if(smallerChild.getParent() == null)
+        if (smallerChild.getParent() == null)
         {
             // we should add the new node as a root to roots
             RootInfo oldNodeRootInfo = roots.get(smallerChild.getMyPointer());
-            roots.put(
-                    biggerChild.getMyPointer(),
-                    new RootInfo(biggerChild.getMyPointer(), new RamDataLocation<>(oldNodeRootInfo.locationDetailsInParent.getNode(),
-                            oldNodeRootInfo.locationDetailsInParent.getOffset() + 1))
-            );
+
+            RamDataLocation<Value> tempRamDataLocation = new RamDataLocation<>(oldNodeRootInfo.locationDetailsInParent.getNode(),
+                    oldNodeRootInfo.locationDetailsInParent.getOffset() + 1);
+
+            RootInfo tempRootInfo = new RootInfo(biggerChild.getMyPointer(), tempRamDataLocation);
+
+            roots.put(biggerChild.getMyPointer(), tempRootInfo);
             ramFileBtree.insert(roots.get(smallerChild.getMyPointer()).locationDetailsInParent.getNode(),
                     smallerChild.getKeyValPair().remove(victim),
                     null, null,
-                    smallerChild.getMyPointer(), biggerChild.getMyPointer());
-        }
-        else
+                    biggerChild.getMyPointer(), smallerChild.getMyPointer());
+        } else
         {
             FileNode<Value> parentNodeTemplate = getNode(smallerChild.getParent());
             insert(parentNodeTemplate, smallerChild.getKeyValPair().remove(victim), biggerChild.getMyPointer(),
@@ -117,25 +121,32 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
     {
         FileNode<Value> newFileNode = createNewMiddleNode(parent);
 
-        if(newFileNode == null ||  newRamNode == null)
-            System.out.println("ohohohohoh");
         newFileNode.setKeyValPair(newRamNode.getKeyValPair());
         newRamNode.setKeyValPair(null);
-        if(newRamNode.isChildAreOnFile())
+        if (newRamNode.isChildAreOnFile())
+        {
             newFileNode.setChild(newRamNode.getFileChild());
+            for(int i = 0; i < newFileNode.getChild().size(); i++)
+            {
+                FileNode<Value> childNode = getNode(newFileNode.getChild().elementAt(i));
+                childNode.setParent(newFileNode.getMyPointer());
+                childNode.commitChanges();
+            }
+        }
         else
         {
-            for(int i = 0; i < newRamNode.getChild().size(); i++)
+            for (int i = 0; i < newRamNode.getChild().size(); i++)
             {
                 RamFileNode<Value> tempChild = newRamNode.getChild().elementAt(i);
-                if(tempChild == null)
+                if (tempChild == null)
                     newFileNode.getChild().add(null);
                 else
                 {
-                    newFileNode.getChild().add(
-                            convertRamNodeToFileNode(tempChild, newFileNode.getMyPointer()).getMyPointer()
-                    );
+                    FileNode<Value> childNode = convertRamNodeToFileNode(tempChild, newFileNode.getMyPointer());
                     newRamNode.getChild().setElementAt(null, i);
+                    FileNode<Value> childNodePtr = getNode(childNode.getMyPointer());
+                    childNodePtr.setParent(newFileNode.getMyPointer());
+                    childNode.commitChanges();
                 }
 
             }
@@ -158,7 +169,7 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
         if (rootNodeTemplate.getSize() == 0)
             return;
         FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
-        if(!thisDataExists(key, loc))
+        if (!thisDataExists(key, loc))
             return;
         updateValue(key, value, loc.getNode(), loc.getOffset());
     }
@@ -168,10 +179,20 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
         nodeCache.clear();
     }
 
+    public String toString()
+    {
+        Vector<FileNode<Value>> nodeTemplateQ = new Vector<>();
+        Vector<RootInfo> tempRoots = new Vector<>(roots.values());
+        for(int i = 0; i < tempRoots.size(); i++)
+            nodeTemplateQ.add(getNode(tempRoots.elementAt(i).rootPointer));
+        nodeTemplateQ.add(null);
+        return toString(nodeTemplateQ, 1);
+    }
+
     class RootInfo
     {
-        private Long rootPointer;
-        private RamDataLocation<Value> locationDetailsInParent;
+        protected Long rootPointer;
+        protected RamDataLocation<Value> locationDetailsInParent;
 
         public RootInfo(Long rootPointer, RamDataLocation<Value> locationDetailsInParent)
         {

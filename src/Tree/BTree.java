@@ -38,7 +38,7 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         int i1 = startingNode.binarySearchForLocationToAdd(key);
         if (i1 == startingNode.getSize())
             nextChild = startingNode.child.elementAt(i1);
-        else if(startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
+        else if (startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
             return null;
         else
             nextChild = startingNode.child.elementAt(i1);
@@ -47,7 +47,7 @@ public class BTree<Key extends Comparable<? super Key>, Value>
 
     public Value search(Key key)
     {
-        if(root.getSize() == 0)
+        if (root.getSize() == 0)
             return null;
         return search(key, root);
     }
@@ -61,9 +61,9 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         int i1 = startingNode.binarySearchForLocationToAdd(key);
         if (i1 == startingNode.getSize())
             nextChild = startingNode.child.elementAt(i1);
-        else if(i1 == -1)
+        else if (i1 == -1)
             System.out.println("ohhhh my goood");
-        else if(startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
+        else if (startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
             return returnValue(key, startingNode, i1);
         else
             nextChild = startingNode.child.elementAt(i1);
@@ -86,12 +86,11 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         int i1 = startingNode.binarySearchForLocationToAdd(key);
         if (i1 == startingNode.getSize())
             nextChild = startingNode.child.elementAt(i1);
-        else if(startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
+        else if (startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
         {
             updateValue(key, value, startingNode, i1);
             return;
-        }
-        else
+        } else
             nextChild = startingNode.child.elementAt(i1);
         update(key, value, nextChild);
     }
@@ -132,12 +131,12 @@ public class BTree<Key extends Comparable<? super Key>, Value>
 
     protected class Node
     {
-        boolean childAreOnFile;
         protected final int HALF_MAX_SIZE, MAX_SIZE;
         protected Vector<Pair<Key, Value>> keyValPair;
         protected Vector<Node> child;
         protected Node parent;
         protected int id;
+        boolean childAreOnFile;
 
         public Node(int halfMaxSize, Node parent)
         {
@@ -170,10 +169,10 @@ public class BTree<Key extends Comparable<? super Key>, Value>
             {
                 keyValPair.add(newData);
                 child.add(smallerChild);
-                if(smallerChild != null)
+                if (smallerChild != null)
                     smallerChild.parent = this;
                 child.add(biggerChild);
-                if(biggerChild != null)
+                if (biggerChild != null)
                     biggerChild.parent = this;
             } else
             {

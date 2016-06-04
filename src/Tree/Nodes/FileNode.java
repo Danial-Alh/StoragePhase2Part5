@@ -9,15 +9,29 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Vector;
 
-public class FileNode <Value extends Sizeofable & Parsable>
+public class FileNode<Value extends Sizeofable & Parsable>
 {
-    protected Vector<Pair<String, Value>> keyValPair;
     protected final int KEY_MAX_SIZE, VALUE_MAX_SIZE;
     protected final int HALF_MAX_SIZE, MAX_SIZE;
+    protected final Class valueClassType;
+    protected Vector<Pair<String, Value>> keyValPair;
     protected Vector<Long> child;
     protected Long parent, myPointer;
-    protected final Class valueClassType;
     protected int id;
+
+    public FileNode(int key_max_size, int value_max_size, int halfMaxSize, Long parent, Class valueClassType)
+    {
+        KEY_MAX_SIZE = key_max_size;
+        VALUE_MAX_SIZE = value_max_size;
+        this.parent = parent;
+        this.HALF_MAX_SIZE = halfMaxSize;
+        this.valueClassType = valueClassType;
+        this.MAX_SIZE = 2 * halfMaxSize - 1;
+//        this.id = ++idCounter;
+        this.id = 0;
+        keyValPair = new Vector<>();
+        child = new Vector<>();
+    }
 
     public Vector<Pair<String, Value>> getKeyValPair()
     {
@@ -49,30 +63,15 @@ public class FileNode <Value extends Sizeofable & Parsable>
         this.parent = parent;
     }
 
-    public void setMyPointer(Long myPointer)
-    {
-        this.myPointer = myPointer;
-    }
-
-    public FileNode(int key_max_size, int value_max_size, int halfMaxSize, Long parent, Class valueClassType)
-    {
-        KEY_MAX_SIZE = key_max_size;
-        VALUE_MAX_SIZE = value_max_size;
-        this.parent = parent;
-        this.HALF_MAX_SIZE = halfMaxSize;
-        this.valueClassType = valueClassType;
-        this.MAX_SIZE = 2 * halfMaxSize - 1;
-//        this.id = ++idCounter;
-        this.id = 0;
-        keyValPair = new Vector<>();
-        child = new Vector<>();
-    }
-
     public Long getMyPointer()
     {
         return myPointer;
     }
 
+    public void setMyPointer(Long myPointer)
+    {
+        this.myPointer = myPointer;
+    }
 
     public int getSize()
     {
@@ -162,7 +161,7 @@ public class FileNode <Value extends Sizeofable & Parsable>
             this.myPointer = myPointer;
             instance.seek(myPointer);
             parent = instance.readLong();
-            if(parent == -1)
+            if (parent == -1)
                 parent = null;
             int size = instance.readInt();
             for (int i = 0; i < size; i++)
@@ -197,7 +196,7 @@ public class FileNode <Value extends Sizeofable & Parsable>
             instance.writeInt(keyValPair.size());
             for (int i = 0; i < MAX_SIZE; i++)
             {
-                if(i < keyValPair.size())
+                if (i < keyValPair.size())
                 {
                     Pair<String, Value> tempKeyVal = keyValPair.elementAt(i);
                     instance.writeBytes(tempKeyVal.getKey());
@@ -205,8 +204,7 @@ public class FileNode <Value extends Sizeofable & Parsable>
                     int emptyBytes = VALUE_MAX_SIZE - tempByteArray.length;
                     instance.write(tempByteArray);
                     instance.write(new byte[emptyBytes]);
-                }
-                else
+                } else
                 {
                     instance.writeBytes(new String(new byte[KEY_MAX_SIZE], "UTF-8"));
                     int emptyBytes = VALUE_MAX_SIZE;
@@ -215,13 +213,12 @@ public class FileNode <Value extends Sizeofable & Parsable>
             }
             for (int i = 0; i <= MAX_SIZE; i++)
             {
-                if(i < child.size())
+                if (i < child.size())
                 {
                     Long tempChild = child.elementAt(i);
                     long childPointer = (tempChild == null ? -1 : tempChild);
                     instance.writeLong(childPointer);
-                }
-                else
+                } else
                     instance.writeLong((long) -1);
             }
         } catch (IOException e)

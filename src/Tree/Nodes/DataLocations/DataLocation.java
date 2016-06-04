@@ -2,6 +2,15 @@ package Tree.Nodes.DataLocations;
 
 class DataLocation<T>
 {
+    private T node;
+    private int offset;
+
+    public DataLocation(T node, int offset)
+    {
+        this.node = node;
+        this.offset = offset;
+    }
+
     public T getNode()
     {
         return node;
@@ -19,15 +28,6 @@ class DataLocation<T>
 
     public void setOffset(int offset)
     {
-        this.offset = offset;
-    }
-
-    private T node;
-    private int offset;
-
-    public DataLocation(T node, int offset)
-    {
-        this.node = node;
         this.offset = offset;
     }
 }

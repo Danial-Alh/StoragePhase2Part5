@@ -15,19 +15,19 @@ public class BPTree<Key extends Comparable<? super Key>, Value> extends BTree<Ke
     @Override
     protected Value returnValue(Key key, Node startingNode, int i1)
     {
-        if(startingNode.child.elementAt(i1) == null) // if it is leaf node
+        if (startingNode.child.elementAt(i1) == null) // if it is leaf node
             return super.returnValue(key, startingNode, i1); // it won't dig any more
         else
-            return search(key, startingNode.child.elementAt(i1+1));
+            return search(key, startingNode.child.elementAt(i1 + 1));
     }
 
     @Override
     protected void updateValue(Key key, Value value, Node startingNode, int i1)
     {
-        if(startingNode.child.elementAt(i1) == null) //it is leaf node
+        if (startingNode.child.elementAt(i1) == null) //it is leaf node
             super.updateValue(key, value, startingNode, i1);// it will add it directly to starting node
         else
-            update(key, value, startingNode.child.elementAt(i1+1));
+            update(key, value, startingNode.child.elementAt(i1 + 1));
     }
 
     protected class LeafNode extends Node

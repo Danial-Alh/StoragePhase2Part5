@@ -1,8 +1,8 @@
 package Tree.Nodes.DataLocations;
 
-import Tree.Nodes.RamFileNode;
 import Primitives.Parsable;
 import Primitives.Sizeofable;
+import Tree.Nodes.RamFileNode;
 
 public class RamDataLocation<Value extends Sizeofable & Parsable> extends DataLocation<RamFileNode<Value>>
 {

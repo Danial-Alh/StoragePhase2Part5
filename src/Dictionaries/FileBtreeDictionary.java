@@ -9,11 +9,6 @@ import Tree.FileBtree;
  */
 public class FileBtreeDictionary
 {
-    public FileBtree<WordProperties> getFileBtree()
-{
-    return fileBtree;
-}
-
     private FileBtree<WordProperties> fileBtree;
 
     public FileBtreeDictionary(int halfNodeSize)
@@ -21,10 +16,15 @@ public class FileBtreeDictionary
         this.fileBtree = new FileBtree<>(10, 4, halfNodeSize, WordProperties.class);
     }
 
+    public FileBtree<WordProperties> getFileBtree()
+    {
+        return fileBtree;
+    }
+
     public void insertNodeIfnotExists(String word)
     {
         WordProperties wordProperties = fileBtree.search(word);
-        if(wordProperties == null)
+        if (wordProperties == null)
         {
             wordProperties = new WordProperties(0);
             try
@@ -35,10 +35,9 @@ public class FileBtreeDictionary
                 e.printStackTrace();
                 return;
             }
-        }
-        else
+        } else
         {
-            wordProperties.setOccurrences(wordProperties.getOccurrences()+1);
+            wordProperties.setOccurrences(wordProperties.getOccurrences() + 1);
 //            fileBtree.update(word, wordProperties);
         }
     }

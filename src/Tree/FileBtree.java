@@ -25,7 +25,7 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
 
     public void insert(String key, Value value) throws Exception
     {
-        if(key.getBytes().length > KEY_MAX_SIZE || value.sizeof() > VALUE_MAX_SIZE)
+        if (key.getBytes().length > KEY_MAX_SIZE || value.sizeof() > VALUE_MAX_SIZE)
             throw new Exception("length exceeded");
         FileNode<Value> rootNodeTemplate = getRootNode();
         if (rootNodeTemplate.getSize() == 0)
@@ -67,7 +67,7 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
         if (rootNodeTemplate.getSize() == 0)
             return null;
         FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
-        if(!thisDataExists(key, loc))
+        if (!thisDataExists(key, loc))
             return null;
         return loc.getNode().getKeyValPair().elementAt(loc.getOffset()).getValue();
 //        return search(key, rootNodeTemplate);
@@ -79,7 +79,7 @@ public class FileBtree<Value extends Sizeofable & Parsable> extends FileBtreeTem
         if (rootNodeTemplate.getSize() == 0)
             return;
         FileDataLocation<Value> loc = findLoc(key, rootNodeTemplate);
-        if(!thisDataExists(key, loc))
+        if (!thisDataExists(key, loc))
             return;
         updateValue(key, value, loc.getNode(), loc.getOffset());
     }

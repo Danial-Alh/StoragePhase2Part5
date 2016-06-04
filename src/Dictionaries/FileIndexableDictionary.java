@@ -5,37 +5,36 @@ import Tree.FileBtree;
 
 public abstract class FileIndexableDictionary
 {
-    private final static int MB = 1024*1024;
+    private final static int MB = 1024 * 1024;
     private final boolean useFileIndex;
     protected FileBtree<WordProperties> fileBtree;
 
     public FileIndexableDictionary(int halfNodeSize, int keyMaxSize, int valueMaxSize, boolean useFileIndex)
     {
         this.useFileIndex = useFileIndex;
-        if(useFileIndex)
+        if (useFileIndex)
             fileBtree = new FileBtree<>(keyMaxSize, valueMaxSize, halfNodeSize, WordProperties.class);
     }
 
     protected abstract void addItToRam(String word);
+
     protected abstract WordProperties searchDataOnRam(String word);
 
     public void insertNodeIfnotExists(String word)
     {
         WordProperties wordProperties = searchDataOnRam(word);
-        if(wordProperties == null)
+        if (wordProperties == null)
         {
-            if(useFileIndex)
+            if (useFileIndex)
             {
                 wordProperties = fileBtree.search(word);
                 if (wordProperties == null)
                     addItToRamIfMemoryLimit(word);
                 else
                     updateFileData(word, wordProperties);
-            }
-            else
+            } else
                 addItToRam(word);
-        }
-        else
+        } else
             updateRamData(wordProperties);
     }
 
@@ -47,7 +46,7 @@ public abstract class FileIndexableDictionary
 
     protected void addItToRamIfMemoryLimit(String word)
     {
-        if(memoryLimitExceeded())
+        if (memoryLimitExceeded())
             try
             {
                 fileBtree.insert(word, new WordProperties(1));
@@ -62,14 +61,14 @@ public abstract class FileIndexableDictionary
 
     protected boolean memoryLimitExceeded()
     {
-        if(Runtime.getRuntime().freeMemory()/MB < 10)
+        if (Runtime.getRuntime().freeMemory() / MB < 10)
             return true;
         return false;
     }
 
     protected void updateRamData(WordProperties wordProperties)
     {
-        wordProperties.setOccurrences(wordProperties.getOccurrences()+1);
+        wordProperties.setOccurrences(wordProperties.getOccurrences() + 1);
 //            bpTree.update(word, wordProperties);
     }
 
