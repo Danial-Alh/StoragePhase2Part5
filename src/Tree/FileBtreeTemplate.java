@@ -160,9 +160,6 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
     {
         for (int i = offset; i <= MAX_SIZE; i++)
         {
-            if (oldNodeTemplate.getSize() - 1 < offset || oldNodeTemplate.getChild().size() - 1 < offset)
-                System.out.println("" +
-                        "ohhhh nooo");
             if (i == offset) // first node
             {
                 Long smallerChild = oldNodeTemplate.getChild().remove(offset), biggerChild = oldNodeTemplate.getChild().remove(offset);
@@ -242,7 +239,7 @@ public abstract class FileBtreeTemplate<Value extends Sizeofable & Parsable>
             if (childNode != null) nodeTemplateQ.add(getNode(childNode));
         }
         FileNode<Value> parentNode;
-        if(currentNodeTemplate.getParent() == null)
+        if (currentNodeTemplate.getParent() == null)
             parentNode = null;
         else
             parentNode = getNode(currentNodeTemplate.getParent());

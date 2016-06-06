@@ -3,7 +3,6 @@ package Tree.Nodes;
 import FileManagement.RandomAccessFileManagement;
 import Primitives.Parsable;
 import Primitives.Sizeofable;
-import Tree.ExtendedFileBtree;
 import Tree.RamFileBtree;
 import javafx.util.Pair;
 
@@ -19,17 +18,6 @@ public class FileNode<Value extends Sizeofable & Parsable>
     protected Vector<Pair<String, Value>> keyValPair;
     protected Vector<Long> child;
     protected Long parent, myPointer;
-
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-
     protected int id;
 
     public FileNode(int key_max_size, int value_max_size, int halfMaxSize, Long parent, Class valueClassType)
@@ -43,6 +31,16 @@ public class FileNode<Value extends Sizeofable & Parsable>
         this.id = RamFileBtree.getNewID();
         keyValPair = new Vector<>();
         child = new Vector<>();
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public Vector<Pair<String, Value>> getKeyValPair()
@@ -178,21 +176,13 @@ public class FileNode<Value extends Sizeofable & Parsable>
         try
         {
 //                System.out.println("fetching from hard, pointer: " + myPointer);
-            if(myPointer < 0 || myPointer >= instance.getChannel().size())
-                System.out.println("ohhhhh");
             this.myPointer = myPointer;
             instance.seek(myPointer);
             parent = instance.readLong();
-            if(parent < -1)
-                System.out.println("jjjjjjjjjjjjjjjjjjjjj1");
             if (parent == -1)
                 parent = null;
             id = instance.readInt();
-            if(id < 0)
-                System.out.println("jjjjjjjjjjjjjjjjjjjjj2");
             int size = instance.readInt();
-            if(size < 0)
-                System.out.println("jjjjjjjjjjjjjjjjjjjjj3");
             for (int i = 0; i < size; i++)
             {
                 int readSize = 0;
@@ -207,16 +197,12 @@ public class FileNode<Value extends Sizeofable & Parsable>
                 instance.read(tempByteArray);
                 Value value = (Value) valueClassType.newInstance();
                 value.parsefromByteArray(tempByteArray);
-                if(!key.equalsIgnoreCase(value.toString()))
-                    System.out.println("conflict");
                 keyValPair.add(new Pair<>(key, value));
             }
             for (int i = 0; i <= size; i++)
             {
                 long childPtr = instance.readLong();
-                if(childPtr < -1)
-                    System.out.println("jjjjjjjjjjjjjjjjjjjjj4");
-                if(childPtr == -1)
+                if (childPtr == -1)
                     child.add(null);
                 else
                     child.add(childPtr);

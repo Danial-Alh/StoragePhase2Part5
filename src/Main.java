@@ -7,7 +7,7 @@ import Tree.RamFileBtree;
 public class Main
 {
     public static boolean usefile = true;
-    public static int keyS = 10, valS = 4, halfS = 2, range = 1000000;
+    public static int keyS = 10, valS = 4, halfS = 2, range = 100000;
     public static long start;
 
     public static void main(String args[])
@@ -28,25 +28,32 @@ public class Main
 
     private static void ramFileTest()
     {
+        Runtime.getRuntime().gc();
+        double timeMin = Double.MAX_VALUE;
+        start = System.currentTimeMillis();
         RamFileBtree<WordProperties> ramFileBtree = new RamFileBtree<>(10, new WordProperties(0).sizeof(), halfS, WordProperties.class);
         try
         {
             for (int i = 0; i < range; i++)
             {
                 ramFileBtree.insert(String.valueOf(i), new WordProperties(i));
-                if (i % 100000 == 0)
-                {
-                    long end = System.currentTimeMillis();
-                    System.out.println("nodes inserted: " + i);
-                    System.out.println("minutes elapsed: " + (end - start) / 60000.0);
-                    System.out.println("seconds elapsed: " + (end - start) / 1000.0);
-                }
+//                if (i % 100000 == 0)
+//                {
+//                    long end = System.currentTimeMillis();
+//                    System.out.println("nodes inserted: " + i);
+//                    System.out.println("minutes elapsed: " + (end - start) / 60000.0);
+//                    System.out.println("seconds elapsed: " + (end - start) / 1000.0);
+//                }
             }
+            long end = System.currentTimeMillis();
+            System.out.println("halfs ----------->>>>>>> " + halfS);
+            double timeInterval = (end - start) / 1000.0;
+            System.out.println("minutes elapsed: " + (timeInterval / 60.0));
+            System.out.println("seconds elapsed: " + timeInterval);
         } catch (Exception e)
         {
             e.printStackTrace();
         }
-
 //        for(int i = 0; i < range; i++)
 //            fileBtreeDictionary.insertNodeIfnotExists(String.valueOf(i));
 //        for(int i = 0; i < 9; i++)

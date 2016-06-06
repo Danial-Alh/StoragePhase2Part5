@@ -97,8 +97,6 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
             // we should add the new node as a root to roots
             RootInfo oldNodeRootInfo = roots.get(smallerChild.getMyPointer());
 
-            if( oldNodeRootInfo == null)
-                System.out.println("ohhh null");
             RamDataLocation<Value> tempRamDataLocation = new RamDataLocation<>(oldNodeRootInfo.locationDetailsInParent.getNode(),
                     oldNodeRootInfo.locationDetailsInParent.getOffset() + 1);
 

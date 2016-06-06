@@ -61,8 +61,6 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         int i1 = startingNode.binarySearchForLocationToAdd(key);
         if (i1 == startingNode.getSize())
             nextChild = startingNode.child.elementAt(i1);
-        else if (i1 == -1)
-            System.out.println("ohhhh my goood");
         else if (startingNode.keyValPair.elementAt(i1).getKey().compareTo(key) == 0)
             return returnValue(key, startingNode, i1);
         else
@@ -255,9 +253,6 @@ public class BTree<Key extends Comparable<? super Key>, Value>
         {
             for (int i = offset; i <= MAX_SIZE; i++)
             {
-                if (getSize() - 1 < offset || child.size() - 1 < offset)
-                    System.out.println("" +
-                            "ohhhh nooo");
                 if (i == offset) // first node
                 {
                     Node smallerChild = child.remove(offset), biggerChild = child.remove(offset);

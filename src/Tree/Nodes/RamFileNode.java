@@ -17,17 +17,6 @@ public class RamFileNode<Value extends Sizeofable & Parsable>
     protected Vector<RamFileNode> child;
     protected Vector<Long> fileChild;
     protected RamFileNode parent;
-
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-
     protected int id;
     boolean childAreOnFile;
 
@@ -41,6 +30,16 @@ public class RamFileNode<Value extends Sizeofable & Parsable>
         keyValPair = new Vector<>();
         child = new Vector<>();
         fileChild = new Vector<>();
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public boolean isChildAreOnFile()
