@@ -10,7 +10,8 @@ import java.util.Vector;
 
 public class RamFileBtree<Value extends Sizeofable & Parsable>
 {
-    private static final long MEMORY_LIMIT = 1;
+    private static final long MEMORY_LIMIT = 30;
+    private static int idCounter = 0;
     protected final int KEY_MAX_SIZE;
     protected final int VALUE_MAX_SIZE;
     protected final int HALF_MAX_SIZE, MAX_SIZE;
@@ -85,12 +86,12 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
 
     protected void checkMemoryAndFreeIfRequired()
     {
-        if(depthIncremented)
-        {
-            storeNodesOnFile();
-            depthIncremented = false;
-            return;
-        }
+//        if(depthIncremented)
+//        {
+//            storeNodesOnFile();
+//            depthIncremented = false;
+//            return;
+//        }
         if (memoryLimitExceeded())
         {
             if (!getRootNode().isChildAreOnFile())
@@ -109,10 +110,7 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         for (int i = 0; i <= rootNode.getSize(); i++)
         {
             Long childFileNodePtr = extendedFileBtree.addNewRoot(rootNode.getChild().elementAt(i), rootNode, i);
-            if (i >= rootNode.getFileChild().size())
-                rootNode.getFileChild().add(childFileNodePtr);
-            else
-                rootNode.getFileChild().set(i, childFileNodePtr);
+            rootNode.getFileChild().set(i, childFileNodePtr);
             rootNode.getChild().set(i, null);
         }
     }
@@ -183,7 +181,7 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         Vector<RamFileNode<Value>> nodeTemplateQ = new Vector<>();
         nodeTemplateQ.add(getRootNode());
         nodeTemplateQ.add(null);
-        return toString(nodeTemplateQ, 1) + "\n\n***************Files********\n\n" + extendedFileBtree.toString();
+        return toString(nodeTemplateQ, 1) + "\n\n***********************\n\n" + extendedFileBtree.toString();
     }
 
     protected void insert(RamFileNode<Value> startingNode, Pair<String, Value> newData,
@@ -376,4 +374,8 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         return currentNodeTemplate.toString() + "\t" + toString(nodeTemplateQ, stringDepth);
     }
 
+    public static int getNewID()
+    {
+        return ++idCounter;
+    }
 }

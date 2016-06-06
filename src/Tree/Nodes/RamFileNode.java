@@ -2,6 +2,7 @@ package Tree.Nodes;
 
 import Primitives.Parsable;
 import Primitives.Sizeofable;
+import Tree.RamFileBtree;
 import javafx.util.Pair;
 
 import java.util.Vector;
@@ -16,6 +17,17 @@ public class RamFileNode<Value extends Sizeofable & Parsable>
     protected Vector<RamFileNode> child;
     protected Vector<Long> fileChild;
     protected RamFileNode parent;
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
+    }
+
     protected int id;
     boolean childAreOnFile;
 
@@ -25,7 +37,7 @@ public class RamFileNode<Value extends Sizeofable & Parsable>
 //            this.HALF_MAX_SIZE = halfMaxSize;
 //            this.MAX_SIZE = 2 * halfMaxSize - 1;
         this.parent = parent;
-        this.id = /*++idCounter*/0;
+        this.id = RamFileBtree.getNewID();
         keyValPair = new Vector<>();
         child = new Vector<>();
         fileChild = new Vector<>();

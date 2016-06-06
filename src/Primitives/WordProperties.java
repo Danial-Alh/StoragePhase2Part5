@@ -7,6 +7,11 @@ public class WordProperties implements Sizeofable, Parsable
     int occurrences;
     int temp[];
 
+    public WordProperties()
+    {
+        this.occurrences = 0;
+    }
+
     public WordProperties(int occurrences)
     {
         this.occurrences = occurrences;

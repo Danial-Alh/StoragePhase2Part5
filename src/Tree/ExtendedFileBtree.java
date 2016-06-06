@@ -8,7 +8,6 @@ import Tree.Nodes.FileNode;
 import Tree.Nodes.RamFileNode;
 import javafx.util.Pair;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -79,9 +78,8 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
                               int newRamPointerLocInParent)
     {
         FileNode<Value> newFileNode = convertRamNodeToFileNode(newRamRoot, null);
-        newFileNode.commitChanges();
         roots.put(newFileNode.getMyPointer(),
-                new RootInfo(newFileNode.getMyPointer(), new RamDataLocation<Value>(ramParent, newRamPointerLocInParent)));
+                new RootInfo(newFileNode.getMyPointer(), new RamDataLocation<>(ramParent, newRamPointerLocInParent)));
         return newFileNode.getMyPointer();
     }
 
@@ -99,6 +97,8 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
             // we should add the new node as a root to roots
             RootInfo oldNodeRootInfo = roots.get(smallerChild.getMyPointer());
 
+            if( oldNodeRootInfo == null)
+                System.out.println("ohhh null");
             RamDataLocation<Value> tempRamDataLocation = new RamDataLocation<>(oldNodeRootInfo.locationDetailsInParent.getNode(),
                     oldNodeRootInfo.locationDetailsInParent.getOffset() + 1);
 
@@ -122,18 +122,18 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
         FileNode<Value> newFileNode = createNewMiddleNode(parent);
 
         newFileNode.setKeyValPair(newRamNode.getKeyValPair());
+        newFileNode.setId(newRamNode.getId());
         newRamNode.setKeyValPair(null);
         if (newRamNode.isChildAreOnFile())
         {
             newFileNode.setChild(newRamNode.getFileChild());
-            for(int i = 0; i < newFileNode.getChild().size(); i++)
+            for (int i = 0; i < newFileNode.getChild().size(); i++)
             {
                 FileNode<Value> childNode = getNode(newFileNode.getChild().elementAt(i));
                 childNode.setParent(newFileNode.getMyPointer());
                 childNode.commitChanges();
             }
-        }
-        else
+        } else
         {
             for (int i = 0; i < newRamNode.getChild().size(); i++)
             {
@@ -144,9 +144,7 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
                 {
                     FileNode<Value> childNode = convertRamNodeToFileNode(tempChild, newFileNode.getMyPointer());
                     newRamNode.getChild().setElementAt(null, i);
-                    FileNode<Value> childNodePtr = getNode(childNode.getMyPointer());
-                    childNodePtr.setParent(newFileNode.getMyPointer());
-                    childNode.commitChanges();
+                    newFileNode.getChild().add(childNode.getMyPointer());
                 }
 
             }
@@ -155,6 +153,7 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
         newRamNode.setFileChild(null);
         newRamNode.setChild(null);
         newRamNode.setParent(null);
+        newFileNode.commitChanges();
         return newFileNode;
     }
 
@@ -181,9 +180,10 @@ public class ExtendedFileBtree<Value extends Sizeofable & Parsable> extends File
 
     public String toString()
     {
+//        return "";
         Vector<FileNode<Value>> nodeTemplateQ = new Vector<>();
         Vector<RootInfo> tempRoots = new Vector<>(roots.values());
-        for(int i = 0; i < tempRoots.size(); i++)
+        for (int i = 0; i < tempRoots.size(); i++)
             nodeTemplateQ.add(getNode(tempRoots.elementAt(i).rootPointer));
         nodeTemplateQ.add(null);
         return toString(nodeTemplateQ, 1);

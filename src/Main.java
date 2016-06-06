@@ -7,7 +7,7 @@ import Tree.RamFileBtree;
 public class Main
 {
     public static boolean usefile = true;
-    public static int keyS = 10, valS = 4, halfS = 2, range = 1000;
+    public static int keyS = 10, valS = 4, halfS = 2, range = 1000000;
     public static long start;
 
     public static void main(String args[])
@@ -34,7 +34,7 @@ public class Main
             for (int i = 0; i < range; i++)
             {
                 ramFileBtree.insert(String.valueOf(i), new WordProperties(i));
-                if (i % 1000000 == 0)
+                if (i % 100000 == 0)
                 {
                     long end = System.currentTimeMillis();
                     System.out.println("nodes inserted: " + i);
