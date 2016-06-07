@@ -7,11 +7,15 @@ import Tree.RamFileBtree;
 public class Main
 {
     public static boolean usefile = true;
-    public static int keyS = 10, valS = 4, halfS = 2, range = 100000;
+    public static int keyS = 10, valS = 4, halfS = 2, range = 600000;
     public static long start;
 
     public static void main(String args[])
     {
+        if(args.length > 0)
+            halfS = Integer.parseInt(args[0]);
+        if(args.length > 1)
+            range = Integer.parseInt(args[1]);
         start = System.currentTimeMillis();
 //        bTreeTest();
 //        fileBTreeDictionaryTest();
@@ -22,13 +26,12 @@ public class Main
         ramFileTest();
         long end = System.currentTimeMillis();
 
-        System.out.println("minutes elapsed: " + (end - start) / 60000.0);
-        System.out.println("seconds elapsed: " + (end - start) / 1000.0);
+//        System.out.println("minutes elapsed: " + (end - start) / 60000.0);
+//        System.out.println("seconds elapsed: " + (end - start) / 1000.0);
     }
 
     private static void ramFileTest()
     {
-        Runtime.getRuntime().gc();
         double timeMin = Double.MAX_VALUE;
         start = System.currentTimeMillis();
         RamFileBtree<WordProperties> ramFileBtree = new RamFileBtree<>(10, new WordProperties(0).sizeof(), halfS, WordProperties.class);
@@ -46,10 +49,11 @@ public class Main
 //                }
             }
             long end = System.currentTimeMillis();
-            System.out.println("halfs ----------->>>>>>> " + halfS);
+//            System.out.println("halfs ----------->>>>>>> " + halfS);
             double timeInterval = (end - start) / 1000.0;
-            System.out.println("minutes elapsed: " + (timeInterval / 60.0));
-            System.out.println("seconds elapsed: " + timeInterval);
+            System.out.println(timeInterval);
+//            System.out.println("minutes elapsed: " + (timeInterval / 60.0));
+//            System.out.println("seconds elapsed: " + timeInterval);
         } catch (Exception e)
         {
             e.printStackTrace();

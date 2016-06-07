@@ -108,6 +108,7 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
 
     private void storeNodesOnFile()
     {
+        System.out.println("depth: " + depth);
         extendedFileBtree.invalidateRoots();
         RamFileNode<Value> rootNode = getRootNode();
         rootNode.setChildAreOnFile(true);
@@ -124,7 +125,7 @@ public class RamFileBtree<Value extends Sizeofable & Parsable>
         double freeMomory = Runtime.getRuntime().freeMemory() / MB;
         if (freeMomory < MEMORY_LIMIT)
         {
-            System.out.println("Memory freeing -- >> freeMemory: " + freeMomory);
+//            System.out.println("Memory freeing -- >> freeMemory: " + freeMomory);
             return true;
         }
         return false;
