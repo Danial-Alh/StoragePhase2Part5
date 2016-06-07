@@ -23,7 +23,7 @@ public class FIleVector<Value extends Sizeofable & Parsable>
     {
         if(indexPtr == -1 || indexPtr == null)
             return null;
-        Long valuePtrOnFile = findValueLocOnFile(indexPtr, offset);
+        Long valuePtrOnFile = findValuePtrOnFile(indexPtr, offset, false);
         return readValueAt(valuePtrOnFile);
     }
 
@@ -47,7 +47,7 @@ public class FIleVector<Value extends Sizeofable & Parsable>
     {
         if(indexPtr == null || indexPtr == -1)
             indexPtr =  createNewIndex();
-        Long valuePtrOnFile = findValueLocOnFile(indexPtr, offset);
+        Long valuePtrOnFile = findValuePtrOnFile(indexPtr, offset, true);
         writeValueAt(valuePtrOnFile, value);
         return indexPtr;
     }
@@ -65,7 +65,7 @@ public class FIleVector<Value extends Sizeofable & Parsable>
         }
     }
 
-    private Long findValueLocOnFile(Long indexPtr, int offset)
+    private Long findValuePtrOnFile(Long indexPtr, int offset, boolean createNewIndexOnNotExist)
     {
         RandomAccessFile instance = RandomAccessFileManagement.getMyInstance();
         Long tempIndexPtr = indexPtr;
