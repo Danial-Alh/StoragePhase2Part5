@@ -7,5 +7,5 @@ public interface Parsable
 {
     byte[] toByteArray();
 
-    void parsefromByteArray(byte[] input);
+    void parseFromByteArray(byte[] input);
 }

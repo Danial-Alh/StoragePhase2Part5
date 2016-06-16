@@ -44,11 +44,12 @@ public class WordProperties implements Sizeofable, Parsable
     public byte[] toByteArray()
     {
         BigInteger bigInteger = BigInteger.valueOf(occurrences);
-        return bigInteger.toByteArray();
+        byte[] bytes = bigInteger.toByteArray();
+        return bytes;
     }
 
     @Override
-    public void parsefromByteArray(byte[] input)
+    public void parseFromByteArray(byte[] input)
     {
         BigInteger bigInteger = new BigInteger(input);
         occurrences = bigInteger.intValue();

@@ -3,6 +3,8 @@ import Primitives.WordProperties;
 import Tree.BTree;
 import Tree.FileBtree;
 import Tree.RamFileBtree;
+import Vector.FileVector;
+import com.sun.glass.ui.Size;
 
 public class Main
 {
@@ -23,11 +25,34 @@ public class Main
 //        bptreeDictionaryTest();
 //        trieDictionaryTest();
 //        hashMapDictionaryTest();
-        ramFileTest();
+//        ramFileTest();
+        fileVectorTest();
         long end = System.currentTimeMillis();
 
-//        System.out.println("minutes elapsed: " + (end - start) / 60000.0);
-//        System.out.println("seconds elapsed: " + (end - start) / 1000.0);
+        System.out.println("minutes elapsed: " + (end - start) / 60000.0);
+        System.out.println("seconds elapsed: " + (end - start) / 1000.0);
+    }
+
+    private static void fileVectorTest()
+    {
+        FileVector<WordProperties> fileVector = new FileVector<>(WordProperties.class);
+        int size = 100000;
+        Long ptr[] = new Long[size];
+        for(int i = 0; i < size; i++)
+        {
+            ptr[i] = fileVector.writeElementAt(null, 0, new WordProperties(2));
+        }
+        for(int i = 0; i < size; i++)
+        {
+            WordProperties wordProperties = fileVector.elementAt(ptr[i], 0);
+            wordProperties.setOccurrences(wordProperties.getOccurrences()*(i+1));
+            fileVector.writeElementAt(ptr[i], 0, wordProperties);
+        }
+
+        for(int i = 0; i < size; i++)
+        {
+            System.out.println("i: "+ fileVector.elementAt(ptr[i], 0).getOccurrences());
+        }
     }
 
     private static void ramFileTest()
